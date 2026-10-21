@@ -52,7 +52,7 @@
         }
 
         html, body {
-            width: 100vw;
+            width: 100%;
             min-height: 100vh;
             margin: 0;
             padding: 0;
@@ -87,19 +87,29 @@
             padding: 8px;
         }
 
-        /* Fluid Auto-Fit Grids for Edge-to-Edge Responsiveness */
-        .metrics-grid {
+        /* Zero-Horizontal-Scroll Full-Width Set Row Grid */
+        .set-row-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
+            grid-template-columns: 112px minmax(135px, 1.15fr) 92px 76px 104px minmax(145px, 1.25fr) 136px;
+            gap: 0.5rem;
+            align-items: center;
             width: 100%;
         }
 
-        .split-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 1.25rem;
-            width: 100%;
+        @media (max-width: 1180px) {
+            .set-row-grid {
+                grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+                gap: 0.5rem;
+            }
+        }
+
+        /* Sticky Right Gemini AI Coach Sidebar that scrolls with the user */
+        @media (min-width: 1024px) {
+            .sticky-coach-panel {
+                position: sticky;
+                top: 0.75rem;
+                height: calc(100vh - 1.5rem);
+            }
         }
 
         /* Custom Scrollbars */
@@ -119,251 +129,152 @@
         }
     </style>
 </head>
-<body class="bg-[#0f172a] text-[#f8fafc] w-screen min-h-screen flex flex-col m-0 p-0 selection:bg-blue-500 selection:text-white">
+<body class="bg-[#0f172a] text-[#f8fafc] w-full min-h-screen flex flex-col m-0 p-0 selection:bg-blue-500 selection:text-white">
 
     <!-- =====================================================================
-         TOP FULL-WIDTH TELEMETRY HEADER (100% VIEWPORT WIDTH)
+         COMPACT FULL-WIDTH TOP HEADER (NAVIGATION + 3-4-5 TELEMETRY + BACKUP)
+         Eliminates the left sidebar so lift cards extend edge-to-edge on the left
     ===================================================================== -->
-    <header class="sticky top-0 z-40 w-full bg-[#1e293b]/95 backdrop-blur-md border-b border-[#334155] px-4 lg:px-6 py-3">
-        <div class="w-full flex flex-wrap items-center justify-between gap-3">
-            <!-- Brand & Lumbar Status -->
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-blue-500/20 font-black text-slate-950 font-mono text-sm shrink-0">
-                    345
-                </div>
-                <div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h1 class="text-base sm:text-lg font-black tracking-tight uppercase text-slate-50">
-                            ARGON // 3-4-5 HYBRID & 4×4 OS
-                        </h1>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-mono font-semibold uppercase rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            Lumbar Guard Active
-                        </span>
+    <header class="w-full bg-[#1e293b] border-b border-[#334155] px-3 sm:px-5 py-2.5">
+        <div class="w-full flex flex-col gap-2.5">
+            <!-- Top Row: Brand, Primary Module Navigation Tabs, and JSON Backup / API Key Controls -->
+            <div class="w-full flex flex-wrap items-center justify-between gap-2.5">
+                <!-- Brand & Lumbar Guard Status -->
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center shadow-md shadow-blue-500/20 font-black text-slate-950 font-mono text-xs shrink-0">
+                        345
                     </div>
-                    <p class="text-xs text-slate-400 font-mono">
-                        BW: 200 LBS • TARGETS: 315 BENCH / 405 SQUAT (70LB SSB) / 495 DEADLIFT + 4×/WK NORWEGIAN 4×4
-                    </p>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h1 class="text-sm sm:text-base font-black tracking-tight uppercase text-slate-50">
+                                ARGON // 3-4-5 HYBRID & 4×4 OS
+                            </h1>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Lumbar Guard Active
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-mono">
+                            200 LB BW • 70LB ROGUE SSB • 115LB OHP • 4×/WK NORWEGIAN 4×4
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Module Switcher Tabs (Moved from Left Sidebar into Top Header) -->
+                <nav class="flex flex-wrap items-center gap-1.5">
+                    <button type="button" onclick="switchModule('logger')" id="navBtn-logger" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm shadow-blue-600/30 transition flex items-center gap-1.5">
+                        <span>🏋️</span><span>Workout Logger</span>
+                    </button>
+                    <button type="button" onclick="switchModule('plates')" id="navBtn-plates" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition flex items-center gap-1.5">
+                        <span>📐</span><span>45lb vs 70lb SSB Calc</span>
+                    </button>
+                    <button type="button" onclick="switchModule('timers')" id="navBtn-timers" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition flex items-center gap-1.5">
+                        <span>⏱️</span><span>Norwegian 4×4 Timer</span>
+                    </button>
+                    <button type="button" onclick="switchModule('schedule')" id="navBtn-schedule" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition flex items-center gap-1.5">
+                        <span>📅</span><span>Weekly 2-a-Day Split</span>
+                    </button>
+                    <button type="button" onclick="switchModule('history')" id="navBtn-history" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition flex items-center gap-1.5">
+                        <span>📈</span><span>History (<span id="navHistoryCount">4</span>)</span>
+                    </button>
+                </nav>
+
+                <!-- Portable JSON Export/Import & Gemini API Key -->
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <button type="button" onclick="exportTrainingDataJSON()" class="px-2.5 py-1.5 rounded-lg bg-[#0f172a] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] text-[11px] font-mono font-semibold transition" title="Download JSON backup of all logs">
+                        ⬇ Export JSON
+                    </button>
+                    <label class="px-2.5 py-1.5 rounded-lg bg-[#0f172a] hover:bg-emerald-600 text-slate-200 hover:text-white border border-[#334155] text-[11px] font-mono font-semibold transition cursor-pointer" title="Restore JSON backup">
+                        ⬆ Import JSON
+                        <input type="file" accept=".json" onchange="importTrainingDataJSON(event)" class="hidden">
+                    </label>
+                    <button type="button" onclick="openApiKeyModal()" class="px-2.5 py-1.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-slate-200 border border-[#334155] font-mono text-[11px] font-semibold flex items-center gap-1 transition">
+                        <span>🔑</span>
+                        <span id="apiKeyStatusText">Gemini Key</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Live Rest Timer Bar -->
-            <div class="flex flex-wrap items-center gap-2 bg-[#0f172a] border border-[#334155] rounded-xl px-3 py-1.5">
-                <div class="flex items-center gap-1.5 pr-2 border-r border-[#334155]">
-                    <span id="restTimerIndicator" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-                    <span id="restTimerDisplay" class="font-mono text-sm font-extrabold text-slate-50 min-w-[52px]">REST</span>
+            <!-- Second Compact Row: 3-4-5 Club Live Telemetry Badges -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1 border-t border-[#334155]/80">
+                <!-- Bench Badge -->
+                <div class="bg-[#0f172a] border border-[#334155] rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-mono font-bold uppercase text-slate-400">BENCH (315 GOAL)</span>
+                            <span class="text-[10px] font-mono text-blue-400 font-bold" id="cardBenchPctText">97%</span>
+                        </div>
+                        <div class="text-xs font-mono text-slate-300 truncate" id="cardBenchTopText">Top: 255×5 @ RPE 8</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="cardBenchE1rm" class="text-lg font-black font-mono text-white">306</span>
+                        <span class="text-[10px] font-mono text-slate-400 block">e1RM</span>
+                    </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-1">
-                    <button type="button" onclick="startRestTimer(60)" class="px-2 py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">60s</button>
-                    <button type="button" onclick="startRestTimer(90)" class="px-2 py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">90s</button>
-                    <button type="button" onclick="startRestTimer(120)" class="px-2 py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">2m</button>
-                    <button type="button" onclick="startRestTimer(150)" class="px-2 py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">2.5m</button>
-                    <button type="button" onclick="startRestTimer(180)" class="px-2 py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">3m</button>
-                    <button type="button" onclick="startRestTimer(210)" class="px-2 py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">3.5m</button>
-                    <button type="button" onclick="startRestTimer(240)" class="px-2 py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">4m</button>
-                    <button type="button" onclick="stopRestTimer()" class="px-2 py-1 text-[11px] font-mono rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-[#334155] transition" title="Reset Rest Timer">Reset</button>
-                </div>
-            </div>
 
-            <!-- Utility Actions (API Key & Mobile AI Drawer Toggle) -->
-            <div class="flex items-center gap-2">
-                <button type="button" onclick="openApiKeyModal()" class="px-3 py-2 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-slate-200 border border-[#334155] font-mono text-xs font-semibold flex items-center gap-1.5 transition">
-                    <span>🔑</span>
-                    <span id="apiKeyStatusText">Gemini API Key</span>
-                </button>
-                <button type="button" onclick="toggleMobileCoachDrawer()" class="xl:hidden px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-blue-600/30 transition">
-                    ✨ AI Coach
-                </button>
+                <!-- Squat / 70lb SSB Badge -->
+                <div class="bg-[#0f172a] border border-[#334155] rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-mono font-bold uppercase text-slate-400">SSB SQUAT (405 GOAL)</span>
+                            <span class="text-[10px] font-mono text-emerald-400 font-bold" id="cardSquatPctText">82%</span>
+                        </div>
+                        <div class="text-xs font-mono text-slate-300 truncate" id="cardSquatTopText">Top: 270×5 (SSB) @ RPE 8</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="cardSquatE1rm" class="text-lg font-black font-mono text-white">333</span>
+                        <span class="text-[10px] font-mono text-slate-400 block">e1RM</span>
+                    </div>
+                </div>
+
+                <!-- Deadlift Badge -->
+                <div class="bg-[#0f172a] border border-[#334155] rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-mono font-bold uppercase text-slate-400">DEAD-STOP DL (495)</span>
+                            <span class="text-[10px] font-mono text-amber-400 font-bold" id="cardDeadliftPctText">91%</span>
+                        </div>
+                        <div class="text-xs font-mono text-slate-300 truncate" id="cardDeadliftTopText">Top: 385×3 @ RPE 7.5</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="cardDeadliftE1rm" class="text-lg font-black font-mono text-white">451</span>
+                        <span class="text-[10px] font-mono text-slate-400 block">e1RM</span>
+                    </div>
+                </div>
+
+                <!-- Hybrid Total & 4x4 Cadence Badge -->
+                <div class="bg-[#0f172a] border border-[#334155] rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-mono font-bold uppercase text-slate-400">HYBRID TOTAL & 4×4</span>
+                            <span class="text-[10px] font-mono text-emerald-400 font-bold" id="cardTotalPct">90%</span>
+                        </div>
+                        <div class="text-xs font-mono text-amber-400 truncate">160–175 BPM • 165–170 SPM</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="cardTotalE1rm" class="text-lg font-black font-mono text-white">1,090</span>
+                        <span class="text-[10px] font-mono text-slate-400 block">/ 1,215</span>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- =====================================================================
-         FULL-VIEWPORT 3-COLUMN APP SHELL (NO OUTER MARGINS OR GUTTERS)
+         2-COLUMN MAIN LAYOUT BELOW HEADER
+         - Left/Main Column (~72% width, extends to left edge): Exercise Cards
+         - Right Column (~28% width, 380px–420px): Sticky Gemini AI Coach Sidebar
     ===================================================================== -->
-    <div class="w-full flex-1 flex flex-col lg:flex-row min-h-[calc(100vh-65px)]">
+    <div class="w-full flex-1 px-3 sm:px-5 py-4 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px] gap-5 items-start">
 
         <!-- =================================================================
-             1. LEFT NAVIGATION & QUICK-STATS RAIL
+             LEFT / MAIN WORKSPACE (EXTENDS ALL THE WAY TO THE LEFT EDGE)
         ================================================================= -->
-        <aside class="w-full lg:w-64 xl:w-72 shrink-0 bg-[#1e293b] border-b lg:border-b-0 lg:border-r border-[#334155] p-4 flex flex-col justify-between gap-6">
-            <div class="space-y-6">
-                <!-- Primary Navigation Modules -->
-                <div>
-                    <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-2.5 px-1">
-                        OS Modules
-                    </span>
-                    <nav class="flex lg:flex-col gap-1.5 overflow-x-auto pb-1 lg:pb-0">
-                        <button type="button" onclick="switchModule('logger')" id="navBtn-logger" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-md shadow-blue-600/25 transition text-left shrink-0">
-                            <span>🏋️</span>
-                            <span>Workout Logger</span>
-                        </button>
-                        <button type="button" onclick="switchModule('plates')" id="navBtn-plates" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition text-left shrink-0">
-                            <span>📐</span>
-                            <span>45lb vs 70lb SSB Calc</span>
-                        </button>
-                        <button type="button" onclick="switchModule('timers')" id="navBtn-timers" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition text-left shrink-0">
-                            <span>⏱️</span>
-                            <span>Norwegian 4×4 Timer</span>
-                        </button>
-                        <button type="button" onclick="switchModule('schedule')" id="navBtn-schedule" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition text-left shrink-0">
-                            <span>📅</span>
-                            <span>Weekly 2-a-Day Split</span>
-                        </button>
-                        <button type="button" onclick="switchModule('history')" id="navBtn-history" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition text-left shrink-0">
-                            <span>📈</span>
-                            <span>History & Backup</span>
-                        </button>
-                    </nav>
-                </div>
-
-                <!-- Calibrated 5-Day Split Quick Switcher -->
-                <div>
-                    <div class="flex items-center justify-between px-1 mb-2">
-                        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
-                            Calibrated Split (Days 1–5)
-                        </span>
-                    </div>
-                    <div id="sidebarDayList" class="flex lg:flex-col gap-1.5 overflow-x-auto pb-1 lg:pb-0">
-                        <!-- Populated via JS -->
-                    </div>
-                </div>
-
-                <!-- Calibrated Equipment & Baselines Card -->
-                <div class="hidden lg:block bg-[#0f172a] border border-[#334155] rounded-xl p-3.5 space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-mono font-bold uppercase text-amber-400">Calibrated Hardware</span>
-                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">Active</span>
-                    </div>
-                    <ul class="text-xs text-slate-300 space-y-1.5 font-mono">
-                        <li class="flex justify-between"><span>Rogue SSB Bar:</span><strong class="text-white">70 lbs</strong></li>
-                        <li class="flex justify-between"><span>Standard Bar:</span><strong class="text-white">45 lbs</strong></li>
-                        <li class="flex justify-between"><span>Standing OHP:</span><strong class="text-white">115 lbs × 4×6</strong></li>
-                        <li class="flex justify-between"><span>Seated DB OHP:</span><strong class="text-white">55 lbs × 3×8–10</strong></li>
-                        <li class="flex justify-between"><span>Lateral Raise:</span><strong class="text-white">20 lbs × 4×12</strong></li>
-                        <li class="flex justify-between"><span>Face Pulls:</span><strong class="text-white">50 lbs × 3×15</strong></li>
-                        <li class="flex justify-between"><span>4×4 Treadmill:</span><strong class="text-emerald-400">1.5–2.0% Grade</strong></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- LocalStorage Persistence & Backup Controls -->
-            <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-3.5 space-y-2.5">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-mono font-bold uppercase text-slate-400">GitHub Pages Storage</span>
-                    <span class="text-[10px] font-mono text-blue-400">localStorage</span>
-                </div>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
-                    All sets, custom exercises, and logs auto-save to this browser. Export JSON to transfer across devices.
-                </p>
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                    <button type="button" onclick="exportTrainingDataJSON()" class="px-2.5 py-2 rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] text-xs font-mono font-bold transition">
-                        ⬇ Export JSON
-                    </button>
-                    <label class="px-2.5 py-2 rounded-lg bg-[#1e293b] hover:bg-emerald-600 text-slate-200 hover:text-white border border-[#334155] text-xs font-mono font-bold transition text-center cursor-pointer">
-                        ⬆ Import JSON
-                        <input type="file" accept=".json" onchange="importTrainingDataJSON(event)" class="hidden">
-                    </label>
-                </div>
-            </div>
-        </aside>
-
-        <!-- =================================================================
-             2. FLUID MAIN WORKSPACE (STRETCHES EDGE-TO-EDGE)
-        ================================================================= -->
-        <main class="flex-1 w-full min-w-0 bg-[#0f172a] p-4 sm:p-6 overflow-y-auto space-y-6">
-
-            <!-- 3-4-5 CLUB LIVE TELEMETRY CARDS -->
-            <section class="metrics-grid">
-                <!-- Bench Card -->
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex flex-col justify-between shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">FLAT BENCH (315 GOAL)</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">45LB BAR</span>
-                    </div>
-                    <div class="my-2.5 flex items-baseline justify-between">
-                        <div>
-                            <span id="cardBenchE1rm" class="text-2xl sm:text-3xl font-black font-mono text-white">306</span>
-                            <span class="text-xs font-mono text-slate-400 ml-1">lbs e1RM</span>
-                        </div>
-                        <span class="text-xs font-mono text-amber-400 font-bold">GOAL: 315</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-[#0f172a] rounded-full overflow-hidden border border-[#334155]">
-                        <div id="cardBenchBar" class="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 97%;"></div>
-                    </div>
-                    <div class="mt-2.5 text-[11px] font-mono text-slate-300 flex justify-between">
-                        <span id="cardBenchTopText">Top: 255 lbs × 5 @ RPE 8</span>
-                        <span id="cardBenchPctText" class="text-emerald-400 font-bold">97%</span>
-                    </div>
-                </div>
-
-                <!-- Squat Card -->
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex flex-col justify-between shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">SQUAT / SSB (405 GOAL)</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">70LB SSB</span>
-                    </div>
-                    <div class="my-2.5 flex items-baseline justify-between">
-                        <div>
-                            <span id="cardSquatE1rm" class="text-2xl sm:text-3xl font-black font-mono text-white">333</span>
-                            <span class="text-xs font-mono text-slate-400 ml-1">lbs e1RM</span>
-                        </div>
-                        <span class="text-xs font-mono text-amber-400 font-bold">GOAL: 405</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-[#0f172a] rounded-full overflow-hidden border border-[#334155]">
-                        <div id="cardSquatBar" class="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 82%;"></div>
-                    </div>
-                    <div class="mt-2.5 text-[11px] font-mono text-slate-300 flex justify-between">
-                        <span id="cardSquatTopText">Top: 270 lbs × 5 (SSB) @ RPE 8</span>
-                        <span id="cardSquatPctText" class="text-emerald-400 font-bold">82%</span>
-                    </div>
-                </div>
-
-                <!-- Deadlift Card -->
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex flex-col justify-between shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">DEAD-STOP DL (495 GOAL)</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">DEAD-STOP</span>
-                    </div>
-                    <div class="my-2.5 flex items-baseline justify-between">
-                        <div>
-                            <span id="cardDeadliftE1rm" class="text-2xl sm:text-3xl font-black font-mono text-white">451</span>
-                            <span class="text-xs font-mono text-slate-400 ml-1">lbs e1RM</span>
-                        </div>
-                        <span class="text-xs font-mono text-amber-400 font-bold">GOAL: 495</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-[#0f172a] rounded-full overflow-hidden border border-[#334155]">
-                        <div id="cardDeadliftBar" class="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 91%;"></div>
-                    </div>
-                    <div class="mt-2.5 text-[11px] font-mono text-slate-300 flex justify-between">
-                        <span id="cardDeadliftTopText">Top: 385 lbs × 3 @ RPE 7.5</span>
-                        <span id="cardDeadliftPctText" class="text-emerald-400 font-bold">91%</span>
-                    </div>
-                </div>
-
-                <!-- Hybrid Total & Norwegian 4x4 Card -->
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex flex-col justify-between shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">HYBRID TOTAL & 4×4 ENGINE</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">160–175 BPM</span>
-                    </div>
-                    <div class="my-2.5 flex items-baseline justify-between">
-                        <div>
-                            <span id="cardTotalE1rm" class="text-2xl sm:text-3xl font-black font-mono text-white">1,090</span>
-                            <span class="text-xs font-mono text-slate-400 ml-1">/ 1,215 LBS</span>
-                        </div>
-                        <span id="cardTotalPct" class="text-xs font-mono text-blue-400 font-bold">90%</span>
-                    </div>
-                    <div class="text-[11px] font-mono text-slate-300 space-y-1 pt-1 border-t border-[#334155]">
-                        <div class="flex justify-between"><span>4×4 Split:</span><span class="text-white font-semibold">2 Incline Run / 2 Erg-Bike</span></div>
-                        <div class="flex justify-between"><span>Run Turnover:</span><span class="text-amber-400 font-semibold">165–170 SPM @ 1.5–2.0%</span></div>
-                    </div>
-                </div>
-            </section>
+        <main class="w-full min-w-0 space-y-4">
 
             <!-- AUTOMATIC LUMBAR ERECTOR GUARDRAIL BANNER -->
-            <div id="lumbarGuardrailBanner" class="hidden bg-red-950/90 border-2 border-red-500 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 shadow-2xl">
-                <div class="flex items-start gap-3.5">
+            <div id="lumbarGuardrailBanner" class="hidden bg-red-950/90 border-2 border-red-500 rounded-2xl p-4 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 shadow-2xl">
+                <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-xl shrink-0">
                         🚨
                     </div>
@@ -372,62 +283,68 @@
                             LUMBAR ERECTOR GUARDRAIL TRIGGERED — RPE ≥ 9.5 ON AXIAL LIFT
                         </h3>
                         <p class="text-xs sm:text-sm text-red-200/90 mt-1 leading-relaxed">
-                            Reaching RPE 9.5–10 on an axial movement signals spinal stabilizer exhaustion. To protect your lower back, click below to automatically reduce remaining uncompleted back-off sets by 10% (rounded to nearest 5 lbs), cap target RPE at 7.5, and cancel unsupported lower-back hinges.
+                            Hitting RPE 9.5–10 on an axial lift signals spinal stabilizer exhaustion. Use a 1-click audible below to automatically strip remaining uncompleted sets by 10% (rounded to nearest 5 lbs) or skip remaining axial volume.
                         </p>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 shrink-0">
-                    <button type="button" onclick="executeLumbarGuardrailAudible()" class="px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg">
-                        ⚡ 1-Click: Strip Back-Offs -10% & Clear Hinges
+                    <button type="button" onclick="executeLumbarGuardrailAudible('strip')" class="px-3.5 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg">
+                        ⚡ Strip Remaining Sets -10%
                     </button>
-                    <button type="button" onclick="dismissLumbarGuardrail()" class="px-3 py-2.5 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] text-xs font-semibold transition">
+                    <button type="button" onclick="executeLumbarGuardrailAudible('skip')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg">
+                        🛑 Skip Remaining Axial Sets
+                    </button>
+                    <button type="button" onclick="dismissLumbarGuardrail()" class="px-3 py-2 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] text-xs font-semibold transition">
                         Dismiss
                     </button>
                 </div>
             </div>
 
             <!-- =============================================================
-                 MODULE 1: WORKOUT LOGGER (DAYS 1–5)
+                 MODULE 1: WORKOUT LOGGER (EXTENDED FULL-WIDTH LIFT CARDS)
             ============================================================= -->
-            <div id="module-logger" class="space-y-6">
-                <!-- Active Session Control Bar -->
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 space-y-4 shadow-lg">
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <div id="topDaySelectorPills" class="flex flex-wrap items-center gap-2">
+            <div id="module-logger" class="space-y-4">
+                <!-- Day Selector Bar & Active Workout Summary -->
+                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 space-y-3.5 shadow-lg">
+                    <div class="flex flex-wrap items-center justify-between gap-2.5">
+                        <!-- Days 1–5 Selector Pills -->
+                        <div id="topDaySelectorPills" class="flex flex-wrap items-center gap-1.5">
                             <!-- Populated via JS -->
                         </div>
-                        <div class="flex flex-wrap items-center gap-2.5">
+
+                        <!-- Session Actions -->
+                        <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs font-mono text-slate-300 bg-[#0f172a] border border-[#334155] px-3 py-1.5 rounded-xl">
-                                Progress: <strong id="sessionCompletionBadge" class="text-amber-400">0/0 Sets</strong>
+                                Logged: <strong id="sessionCompletionBadge" class="text-emerald-400">0/0 Sets</strong>
                             </span>
-                            <button type="button" onclick="openAddExerciseModal()" class="px-3.5 py-2 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-blue-400 border border-blue-500/40 font-mono text-xs font-bold transition">
+                            <button type="button" onclick="openAddExerciseModal()" class="px-3 py-1.5 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-blue-400 border border-blue-500/40 font-mono text-xs font-bold transition">
                                 + Add Exercise
                             </button>
-                            <button type="button" onclick="resetCurrentDayToDefault()" class="px-3 py-2 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] font-mono text-xs transition" title="Restore Default Prescribed Weights">
-                                ↺ Reset Template
+                            <button type="button" onclick="resetCurrentDayToDefault()" class="px-3 py-1.5 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] font-mono text-xs transition" title="Restore Default Prescribed Weights">
+                                ↺ Reset Day
                             </button>
-                            <button type="button" onclick="saveCompletedWorkoutSession()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20">
-                                ✓ Log Finished Session
+                            <button type="button" onclick="saveCompletedWorkoutSession()" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-md shadow-emerald-500/20">
+                                ✓ Finish & Save Workout
                             </button>
                         </div>
                     </div>
 
-                    <div class="border-t border-[#334155] pt-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                    <div class="border-t border-[#334155] pt-3 flex flex-col xl:flex-row xl:items-center justify-between gap-3">
                         <div>
-                            <div class="flex flex-wrap items-center gap-2.5">
-                                <h2 id="loggerWorkoutTitle" class="text-xl sm:text-2xl font-black text-white"></h2>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 id="loggerWorkoutTitle" class="text-lg sm:text-xl font-black text-white"></h2>
                                 <span id="loggerAxialBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold uppercase"></span>
                             </div>
-                            <p id="loggerWorkoutSubtitle" class="text-xs sm:text-sm text-slate-300 mt-1"></p>
+                            <p id="loggerWorkoutSubtitle" class="text-xs sm:text-sm text-slate-300 mt-0.5"></p>
                         </div>
-                        <div class="bg-[#0f172a] border border-amber-500/40 rounded-xl px-4 py-3 xl:max-w-xl flex items-start gap-2.5">
+                        <div class="bg-[#0f172a] border border-amber-500/40 rounded-xl px-3.5 py-2.5 xl:max-w-xl flex items-start gap-2">
                             <span class="text-amber-400 text-sm mt-0.5">🛡️</span>
                             <p id="loggerWorkoutNotes" class="text-xs text-slate-200 leading-relaxed"></p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Exercise Cards Container -->
+                <!-- Individual Lift Cards Container (Zero Horizontal Scroll) -->
                 <div id="loggerExercisesList" class="space-y-4">
                     <!-- Populated via JS -->
                 </div>
@@ -436,11 +353,11 @@
             <!-- =============================================================
                  MODULE 2: VISUAL PLATE CALCULATOR (45 LB BAR VS. 70 LB SSB)
             ============================================================= -->
-            <div id="module-plates" class="hidden space-y-6">
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 sm:p-6 space-y-6 shadow-lg">
+            <div id="module-plates" class="hidden space-y-4">
+                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 space-y-5 shadow-lg">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#334155] pb-4">
                         <div>
-                            <h2 class="text-xl sm:text-2xl font-black text-white">
+                            <h2 class="text-xl font-black text-white">
                                 Smart Plate Loader Calculator (45 lb Standard vs. 70 lb Rogue SSB)
                             </h2>
                             <p class="text-xs sm:text-sm text-slate-300 mt-1">
@@ -457,9 +374,9 @@
                         </div>
                     </div>
 
-                    <div class="split-grid items-start">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
                         <!-- Left Controls & Presets -->
-                        <div class="space-y-5">
+                        <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-mono font-bold uppercase text-slate-300 mb-2">
                                     Target Total Bar Weight (lbs)
@@ -471,7 +388,7 @@
                                 </div>
                             </div>
 
-                            <div class="space-y-2.5">
+                            <div class="space-y-2">
                                 <span class="text-xs font-mono font-bold uppercase text-slate-400 block">
                                     1-Click Calibrated Working Loads:
                                 </span>
@@ -561,10 +478,10 @@
             <!-- =============================================================
                  MODULE 3: NORWEGIAN 4×4 INTERVAL TIMER & CARDIO LOGGER
             ============================================================= -->
-            <div id="module-timers" class="hidden space-y-6">
-                <div class="split-grid">
+            <div id="module-timers" class="hidden space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
                     <!-- 35-Minute Norwegian 4x4 Interactive Timer -->
-                    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-5 shadow-lg">
+                    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 flex flex-col justify-between space-y-5 shadow-lg">
                         <div class="space-y-4">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <span class="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
@@ -588,7 +505,7 @@
                                 <span id="fourByFourPhaseLabel" class="text-xs font-mono font-bold uppercase tracking-widest text-amber-400 block">
                                     PHASE 1/9: PROGRESSIVE WARM-UP (6:00)
                                 </span>
-                                <div id="fourByFourClock" class="text-6xl sm:text-7xl font-black font-mono text-white tracking-tight">
+                                <div id="fourByFourClock" class="text-6xl font-black font-mono text-white tracking-tight">
                                     06:00
                                 </div>
                                 <div id="fourByFourZonePill" class="inline-block px-3.5 py-1 rounded-lg bg-blue-500/15 text-blue-300 border border-blue-500/30 font-mono text-xs font-bold">
@@ -614,19 +531,19 @@
                         </div>
 
                         <!-- Phase Breakdown List -->
-                        <div id="fourByFourPhaseList" class="space-y-1.5 max-h-60 overflow-y-auto pr-1 border-t border-[#334155] pt-4">
+                        <div id="fourByFourPhaseList" class="space-y-1.5 max-h-56 overflow-y-auto pr-1 border-t border-[#334155] pt-4">
                             <!-- Populated via JS -->
                         </div>
                     </div>
 
                     <!-- Cardio & Metabolic Flush Logger -->
-                    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 sm:p-6 space-y-4 shadow-lg">
+                    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 space-y-4 shadow-lg">
                         <div>
-                            <h3 class="text-lg sm:text-xl font-black text-white">
+                            <h3 class="text-lg font-black text-white">
                                 Log Norwegian 4×4 or Zone 1/2 Recovery Flush
                             </h3>
-                            <p class="text-xs sm:text-sm text-slate-300 mt-1">
-                                Record your 4 weekly VO2 max sessions (160–175 BPM target) or 20-minute post-lift Concept2 / Schwinn flushes.
+                            <p class="text-xs text-slate-300 mt-1">
+                                Record your 4 weekly VO2 max sessions (160–175 BPM target) or 20-minute post-lift Concept2 / Schwinn flushes with live AI Coach feedback.
                             </p>
                         </div>
 
@@ -674,7 +591,7 @@
                             </div>
 
                             <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20">
-                                ✓ Save Cardio Session to History
+                                ✓ Log Cardio & Trigger AI Coach Analysis
                             </button>
                         </form>
                     </div>
@@ -684,14 +601,14 @@
             <!-- =============================================================
                  MODULE 4: MASTER WEEKLY 2-A-DAY HYBRID SCHEDULE
             ============================================================= -->
-            <div id="module-schedule" class="hidden space-y-4">
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 shadow-lg">
-                    <h2 class="text-xl font-black text-white">Synchronized Hybrid Powerbuilding & 4×4 Weekly Schedule</h2>
+            <div id="module-schedule" class="hidden space-y-3">
+                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 shadow-lg">
+                    <h2 class="text-lg sm:text-xl font-black text-white">Synchronized Hybrid Powerbuilding & 4×4 Weekly Schedule</h2>
                     <p class="text-xs sm:text-sm text-slate-300 mt-1">
                         2 Incline Treadmill 4×4s + 2 Erg/Bike 4×4s paired with your 5-day powerbuilding progression to eliminate lower-back interference.
                     </p>
                 </div>
-                <div id="weeklyScheduleContainer" class="space-y-3">
+                <div id="weeklyScheduleContainer" class="space-y-2.5">
                     <!-- Populated via JS -->
                 </div>
             </div>
@@ -699,21 +616,21 @@
             <!-- =============================================================
                  MODULE 5: PERFORMANCE HISTORY & JSON DATA BACKUP
             ============================================================= -->
-            <div id="module-history" class="hidden space-y-4">
-                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 shadow-lg">
+            <div id="module-history" class="hidden space-y-3">
+                <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
                     <div>
-                        <h2 class="text-xl font-black text-white">Saved Workout & Conditioning Logs</h2>
-                        <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
+                        <h2 class="text-lg sm:text-xl font-black text-white">Saved Workout & Conditioning Logs</h2>
+                        <p class="text-xs text-slate-300 mt-0.5">
                             Stored persistently in your browser's localStorage. Use Export/Import JSON to back up or move across devices.
                         </p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button type="button" onclick="exportTrainingDataJSON()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">
+                        <button type="button" onclick="exportTrainingDataJSON()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">
                             ⬇ Export Backup (.json)
                         </button>
                     </div>
                 </div>
-                <div id="historyLogsContainer" class="space-y-3">
+                <div id="historyLogsContainer" class="space-y-2.5">
                     <!-- Populated via JS -->
                 </div>
             </div>
@@ -721,60 +638,87 @@
         </main>
 
         <!-- =================================================================
-             3. DOCKED RIGHT GEMINI AI COACH SIDEBAR
+             RIGHT COLUMN: STICKY GEMINI AI COACH SIDEBAR
+             Scrolls with the user (`sticky top-3 h-[calc(100vh-1.5rem)]`)
+             Includes Live Rest Timer + Real-Time Set Telemetry & Chat
         ================================================================= -->
-        <aside id="coachSidebarDrawer" class="hidden xl:flex w-full xl:w-96 shrink-0 bg-[#1e293b] border-t xl:border-t-0 xl:border-l border-[#334155] flex-col h-[calc(100vh-65px)]">
-            <!-- Coach Header -->
-            <div class="p-4 border-b border-[#334155] flex items-center justify-between bg-[#0f172a]/60">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold">
-                        ✨
+        <aside id="coachSidebarDrawer" class="w-full sticky-coach-panel bg-[#1e293b] border border-[#334155] rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+            <!-- 1. Pinned Top Rest Timer Bar Inside Sticky Sidebar -->
+            <div class="p-3 bg-[#0f172a] border-b border-[#334155] space-y-2 shrink-0">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span id="restTimerIndicator" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">LIVE REST TIMER</span>
                     </div>
-                    <div>
-                        <h2 class="text-sm font-black uppercase tracking-wider text-white">GEMINI AI COACH</h2>
-                        <p id="coachModeSubtitle" class="text-[11px] font-mono text-emerald-400">Live Workout Mutator Ready</p>
+                    <div class="flex items-center gap-2">
+                        <span id="restTimerDisplay" class="font-mono text-lg font-black text-white">REST</span>
+                        <button type="button" onclick="stopRestTimer()" class="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-[#334155] transition">
+                            Reset
+                        </button>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <button type="button" onclick="openApiKeyModal()" class="px-2.5 py-1 rounded-lg bg-[#1e293b] hover:bg-slate-700 text-[11px] font-mono text-slate-300 border border-[#334155]" title="Configure Optional Gemini API Key">
-                        API Key
-                    </button>
-                    <button type="button" onclick="toggleMobileCoachDrawer()" class="xl:hidden px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300">
-                        ✕
-                    </button>
+                <div class="grid grid-cols-7 gap-1">
+                    <button type="button" onclick="startRestTimer(60)" class="py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">60s</button>
+                    <button type="button" onclick="startRestTimer(90)" class="py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">90s</button>
+                    <button type="button" onclick="startRestTimer(120)" class="py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">2m</button>
+                    <button type="button" onclick="startRestTimer(150)" class="py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">2.5m</button>
+                    <button type="button" onclick="startRestTimer(180)" class="py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">3m</button>
+                    <button type="button" onclick="startRestTimer(210)" class="py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">3.5m</button>
+                    <button type="button" onclick="startRestTimer(240)" class="py-1 text-[11px] font-mono font-semibold rounded-lg bg-[#1e293b] hover:bg-blue-600 text-slate-200 hover:text-white border border-[#334155] transition">4m</button>
                 </div>
             </div>
 
-            <!-- 1-Click Audible Chips -->
-            <div class="p-3 bg-[#0f172a]/50 border-b border-[#334155] space-y-2">
+            <!-- 2. Coach Identity Header -->
+            <div class="px-3.5 py-2.5 border-b border-[#334155] flex items-center justify-between bg-[#1e293b] shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold text-sm">
+                        ✨
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <h2 class="text-xs sm:text-sm font-black uppercase tracking-wider text-white">GEMINI AI COACH</h2>
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                Live Set Telemetry
+                            </span>
+                        </div>
+                        <p id="coachModeSubtitle" class="text-[10px] font-mono text-slate-400">Auto-analyzes every logged set</p>
+                    </div>
+                </div>
+                <button type="button" onclick="clearCoachChat()" class="px-2 py-1 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-[10px] font-mono text-slate-400 hover:text-slate-200 border border-[#334155]" title="Clear Chat History">
+                    Clear
+                </button>
+            </div>
+
+            <!-- 3. 1-Click Live Workout Audibles -->
+            <div class="p-2.5 bg-[#0f172a]/50 border-b border-[#334155] space-y-1.5 shrink-0">
                 <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">
                     1-Click Live Workout Audibles:
                 </span>
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="triggerCoachQuickCommand('Set 3 felt like RPE 9.5—strip my remaining back-off sets by 10% and cancel any unsupported hinges.')" class="px-2.5 py-1 rounded-lg bg-[#1e293b] hover:bg-red-500 hover:text-slate-950 text-[11px] font-mono text-red-300 border border-red-500/40 transition">
-                        🚨 RPE 9.5 Lumbar Audible (-10%)
+                <div class="flex flex-wrap gap-1">
+                    <button type="button" onclick="triggerCoachQuickCommand('Set felt like RPE 9.5—strip my remaining back-off sets by 10% and cancel any unsupported hinges.')" class="px-2 py-1 rounded-lg bg-[#1e293b] hover:bg-red-500 hover:text-slate-950 text-[10px] font-mono text-red-300 border border-red-500/40 transition">
+                        🚨 RPE 9.5 Audible (-10%)
                     </button>
-                    <button type="button" onclick="triggerCoachQuickCommand('Load Day 2 Lower Squat with the 70 lb Safety Squat Bar (270x5 Top Set, 235x3x5 Back-Offs).')" class="px-2.5 py-1 rounded-lg bg-[#1e293b] hover:bg-blue-600 hover:text-white text-[11px] font-mono text-slate-200 border border-[#334155] transition">
+                    <button type="button" onclick="triggerCoachQuickCommand('Load Day 2 Lower Squat with the 70 lb Safety Squat Bar (270x5 Top Set, 235x3x5 Back-Offs).')" class="px-2 py-1 rounded-lg bg-[#1e293b] hover:bg-blue-600 hover:text-white text-[10px] font-mono text-slate-200 border border-[#334155] transition">
                         🛡️ Load 70lb SSB Squat
                     </button>
-                    <button type="button" onclick="triggerCoachQuickCommand('Load Day 5 Zero-Axial Upper Body Pump (55lb Seated DB Press, 20lb Laterals, Dips).')" class="px-2.5 py-1 rounded-lg bg-[#1e293b] hover:bg-blue-600 hover:text-white text-[11px] font-mono text-slate-200 border border-[#334155] transition">
-                        💪 Zero-Axial Upper Pump
+                    <button type="button" onclick="triggerCoachQuickCommand('Load Day 5 Zero-Axial Upper Body Pump (55lb Seated DB Press, 20lb Laterals, Dips).')" class="px-2 py-1 rounded-lg bg-[#1e293b] hover:bg-blue-600 hover:text-white text-[10px] font-mono text-slate-200 border border-[#334155] transition">
+                        💪 Zero-Axial Pump
                     </button>
-                    <button type="button" onclick="triggerCoachQuickCommand('Bump my primary top set weight up by 5 lbs in the active workout.')" class="px-2.5 py-1 rounded-lg bg-[#1e293b] hover:bg-emerald-500 hover:text-slate-950 text-[11px] font-mono text-emerald-300 border border-emerald-500/30 transition">
+                    <button type="button" onclick="triggerCoachQuickCommand('Bump my primary top set weight up by 5 lbs in the active workout.')" class="px-2 py-1 rounded-lg bg-[#1e293b] hover:bg-emerald-500 hover:text-slate-950 text-[10px] font-mono text-emerald-300 border border-emerald-500/30 transition">
                         ⬆ +5 lbs Top Set
                     </button>
                 </div>
             </div>
 
-            <!-- Chat Messages Stream -->
-            <div id="coachChatStream" class="flex-1 overflow-y-auto p-4 space-y-3">
+            <!-- 4. Live Set Feedback & Chat Stream -->
+            <div id="coachChatStream" class="flex-1 overflow-y-auto p-3.5 space-y-3 min-h-[320px]">
                 <!-- Populated via JS -->
             </div>
 
-            <!-- Chat Input Form -->
-            <form onsubmit="submitCoachChatMessage(event)" class="p-3 border-t border-[#334155] bg-[#0f172a] flex items-center gap-2">
-                <input type="text" id="coachChatInput" placeholder="Ask Coach to adjust weights, sets, or swap lifts..." class="flex-1 px-3.5 py-2.5 text-xs sm:text-sm">
-                <button type="submit" id="coachSendBtn" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider transition shrink-0">
+            <!-- 5. Chat Input Form -->
+            <form onsubmit="submitCoachChatMessage(event)" class="p-2.5 border-t border-[#334155] bg-[#0f172a] flex items-center gap-2 shrink-0">
+                <input type="text" id="coachChatInput" placeholder="Ask Coach or click 'Log Set' on any lift..." class="flex-1 px-3 py-2 text-xs">
+                <button type="submit" id="coachSendBtn" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider transition shrink-0">
                     Send
                 </button>
             </form>
@@ -853,15 +797,12 @@
                 <button type="button" onclick="closeApiKeyModal()" class="text-slate-400 hover:text-white text-sm font-bold">✕</button>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-                When hosted on GitHub Pages, you can optionally paste a free Google AI Studio API key (<code class="text-blue-400 font-mono">gemini-3-flash-preview</code>) to enable live LLM workout mutations. Your key is stored strictly in your own browser's <code class="text-emerald-400 font-mono">localStorage</code> and never leaves your device.
+                Every time you click <strong>Log Set</strong>, the built-in sports-science telemetry engine delivers instant set analysis. On GitHub Pages, you can also paste a free Google AI Studio key (<code class="text-blue-400 font-mono">gemini-3-flash-preview</code>) so Gemini enriches your live set feedback and natural-language workout edits.
             </p>
             <div>
-                <label class="block text-xs font-mono uppercase text-slate-300 mb-1.5">Gemini API Key (Optional)</label>
+                <label class="block text-xs font-mono uppercase text-slate-300 mb-1.5">Gemini API Key (Optional — Stored in localStorage)</label>
                 <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full px-3.5 py-2.5 text-sm font-mono">
             </div>
-            <p class="text-[11px] text-slate-400">
-                Note: Even without an API key, the built-in deterministic Coach Parser handles RPE 9.5 lumbar audibles, weight changes, and day swaps automatically.
-            </p>
             <div class="flex justify-end gap-2 pt-3 border-t border-[#334155]">
                 <button type="button" onclick="clearSavedApiKey()" class="px-3.5 py-2 rounded-xl bg-[#0f172a] text-red-400 border border-[#334155] text-xs font-semibold">Clear Key</button>
                 <button type="button" onclick="saveApiKeyFromModal()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase">Save Key</button>
@@ -876,7 +817,7 @@
     </div>
 
     <!-- =====================================================================
-         APPLICATION JAVASCRIPT & STATE ENGINE
+         APPLICATION JAVASCRIPT & LIVE SET TELEMETRY ENGINE
     ===================================================================== -->
     <script>
         // ====================================================================
@@ -918,8 +859,18 @@
             return { plates, perSide };
         }
 
+        function formatCompactPlates(plates) {
+            if (!plates || plates.length === 0) return 'Empty Bar';
+            const counts = {};
+            plates.forEach(p => { counts[p] = (counts[p] || 0) + 1; });
+            return Object.entries(counts)
+                .sort((a, b) => parseFloat(b[0]) - parseFloat(a[0]))
+                .map(([plate, count]) => count > 1 ? `${count}×${plate}` : `${plate}`)
+                .join(' + ') + '/side';
+        }
+
         // ====================================================================
-        // 2. DEFAULT CALIBRATED 5-DAY HYBRID TEMPLATES
+        // 2. DEFAULT CALIBRATED 5-DAY HYBRID TEMPLATES (WITH TARGET PRESCRIPTIONS)
         // ====================================================================
         const DEFAULT_WORKOUT_TEMPLATES = {
             day1_upper_push: {
@@ -934,60 +885,60 @@
                         id: 'd1_bench', name: 'Flat Barbell Bench Press', barType: '45lb', liftKey: 'bench', isAxial: false, isUnsupportedHinge: false, restSeconds: 210,
                         cue: 'Retract scapulae hard into pad, drive heels horizontally, touch lower sternum under full control.',
                         sets: [
-                            { id: 'd1_b_w1', type: 'WARMUP', weight: 135, reps: 5, rpe: 6.0, completed: true },
-                            { id: 'd1_b_w2', type: 'WARMUP', weight: 185, reps: 3, rpe: 6.5, completed: true },
-                            { id: 'd1_b_w3', type: 'WARMUP', weight: 225, reps: 2, rpe: 7.0, completed: true },
-                            { id: 'd1_b_top', type: 'TOP SET', weight: 255, reps: 5, rpe: 8.0, completed: false },
-                            { id: 'd1_b_bo1', type: 'BACK-OFF', weight: 235, reps: 5, rpe: 7.5, completed: false },
-                            { id: 'd1_b_bo2', type: 'BACK-OFF', weight: 235, reps: 5, rpe: 7.5, completed: false },
-                            { id: 'd1_b_bo3', type: 'BACK-OFF', weight: 235, reps: 5, rpe: 7.5, completed: false },
-                            { id: 'd1_b_bo4', type: 'BACK-OFF', weight: 235, reps: 5, rpe: 7.5, completed: false }
+                            { id: 'd1_b_w1', type: 'WARMUP', targetDesc: '135 lbs × 5 @ RPE 6.0', targetWeight: 135, targetReps: 5, targetRpe: 6.0, weight: 135, reps: 5, rpe: 6.0, completed: true },
+                            { id: 'd1_b_w2', type: 'WARMUP', targetDesc: '185 lbs × 3 @ RPE 6.5', targetWeight: 185, targetReps: 3, targetRpe: 6.5, weight: 185, reps: 3, rpe: 6.5, completed: true },
+                            { id: 'd1_b_w3', type: 'WARMUP', targetDesc: '225 lbs × 2 @ RPE 7.0', targetWeight: 225, targetReps: 2, targetRpe: 7.0, weight: 225, reps: 2, rpe: 7.0, completed: true },
+                            { id: 'd1_b_top', type: 'TOP SET', targetDesc: '255 lbs × 4–5 @ RPE 8.0', targetWeight: 255, targetReps: 5, targetRpe: 8.0, weight: 255, reps: 5, rpe: 8.0, completed: false },
+                            { id: 'd1_b_bo1', type: 'BACK-OFF', targetDesc: '235 lbs × 5 @ RPE 7.5', targetWeight: 235, targetReps: 5, targetRpe: 7.5, weight: 235, reps: 5, rpe: 7.5, completed: false },
+                            { id: 'd1_b_bo2', type: 'BACK-OFF', targetDesc: '235 lbs × 5 @ RPE 7.5', targetWeight: 235, targetReps: 5, targetRpe: 7.5, weight: 235, reps: 5, rpe: 7.5, completed: false },
+                            { id: 'd1_b_bo3', type: 'BACK-OFF', targetDesc: '235 lbs × 5 @ RPE 7.5', targetWeight: 235, targetReps: 5, targetRpe: 7.5, weight: 235, reps: 5, rpe: 7.5, completed: false },
+                            { id: 'd1_b_bo4', type: 'BACK-OFF', targetDesc: '235 lbs × 5 @ RPE 7.5', targetWeight: 235, targetReps: 5, targetRpe: 7.5, weight: 235, reps: 5, rpe: 7.5, completed: false }
                         ]
                     },
                     {
                         id: 'd1_ohp', name: 'Standing Barbell OHP (Belted)', barType: '45lb', liftKey: null, isAxial: true, isUnsupportedHinge: false, restSeconds: 150,
                         cue: 'Calibrated at 115 lbs post-bench. Belt tight; lock glutes and quads rigid so lower back never arches.',
                         sets: [
-                            { id: 'd1_o_1', type: 'WORKING', weight: 115, reps: 6, rpe: 8.0, completed: false },
-                            { id: 'd1_o_2', type: 'WORKING', weight: 115, reps: 6, rpe: 8.0, completed: false },
-                            { id: 'd1_o_3', type: 'WORKING', weight: 115, reps: 6, rpe: 8.0, completed: false },
-                            { id: 'd1_o_4', type: 'WORKING', weight: 115, reps: 6, rpe: 8.0, completed: false }
+                            { id: 'd1_o_1', type: 'WORK', targetDesc: '115 lbs × 6 @ RPE 8.0', targetWeight: 115, targetReps: 6, targetRpe: 8.0, weight: 115, reps: 6, rpe: 8.0, completed: false },
+                            { id: 'd1_o_2', type: 'WORK', targetDesc: '115 lbs × 6 @ RPE 8.0', targetWeight: 115, targetReps: 6, targetRpe: 8.0, weight: 115, reps: 6, rpe: 8.0, completed: false },
+                            { id: 'd1_o_3', type: 'WORK', targetDesc: '115 lbs × 6 @ RPE 8.0', targetWeight: 115, targetReps: 6, targetRpe: 8.0, weight: 115, reps: 6, rpe: 8.0, completed: false },
+                            { id: 'd1_o_4', type: 'WORK', targetDesc: '115 lbs × 6 @ RPE 8.0', targetWeight: 115, targetReps: 6, targetRpe: 8.0, weight: 115, reps: 6, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd1_dips', name: 'Parallel Bar Dips', barType: 'BW', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 120,
                         cue: 'Lean torso 15–20° forward; let legs hang slack beneath you to naturally traction the lumbar spine.',
                         sets: [
-                            { id: 'd1_dp_1', type: 'WORKING', weight: 200, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd1_dp_2', type: 'WORKING', weight: 200, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd1_dp_3', type: 'WORKING', weight: 200, reps: 10, rpe: 8.0, completed: false }
+                            { id: 'd1_dp_1', type: 'WORK', targetDesc: '200 lbs (BW) × 8–10 @ RPE 8', targetWeight: 200, targetReps: 10, targetRpe: 8.0, weight: 200, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd1_dp_2', type: 'WORK', targetDesc: '200 lbs (BW) × 8–10 @ RPE 8', targetWeight: 200, targetReps: 10, targetRpe: 8.0, weight: 200, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd1_dp_3', type: 'WORK', targetDesc: '200 lbs (BW) × 8–10 @ RPE 8', targetWeight: 200, targetReps: 10, targetRpe: 8.0, weight: 200, reps: 10, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd1_inc_db', name: 'Incline Dumbbell Press (30°)', barType: 'DB', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 90,
                         cue: '3-second negative descent for a deep stretch across the upper chest.',
                         sets: [
-                            { id: 'd1_idb_1', type: 'WORKING', weight: 80, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd1_idb_2', type: 'WORKING', weight: 80, reps: 9, rpe: 8.0, completed: false },
-                            { id: 'd1_idb_3', type: 'WORKING', weight: 80, reps: 8, rpe: 8.0, completed: false }
+                            { id: 'd1_idb_1', type: 'WORK', targetDesc: '80 lb DBs × 8–10 @ RPE 8.0', targetWeight: 80, targetReps: 10, targetRpe: 8.0, weight: 80, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd1_idb_2', type: 'WORK', targetDesc: '80 lb DBs × 8–10 @ RPE 8.0', targetWeight: 80, targetReps: 9, targetRpe: 8.0, weight: 80, reps: 9, rpe: 8.0, completed: false },
+                            { id: 'd1_idb_3', type: 'WORK', targetDesc: '80 lb DBs × 8–10 @ RPE 8.0', targetWeight: 80, targetReps: 8, targetRpe: 8.0, weight: 80, reps: 8, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd1_pushdowns', name: 'Triceps Rope Pushdowns', barType: 'Cable', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Pin elbows tight to ribs; flare rope outward at bottom lockout.',
                         sets: [
-                            { id: 'd1_tp_1', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd1_tp_2', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd1_tp_3', type: 'WORKING', weight: 50, reps: 12, rpe: 8.0, completed: false }
+                            { id: 'd1_tp_1', type: 'WORK', targetDesc: '50 lbs × 12–15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd1_tp_2', type: 'WORK', targetDesc: '50 lbs × 12–15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd1_tp_3', type: 'WORK', targetDesc: '50 lbs × 12–15 @ RPE 8.0', targetWeight: 50, targetReps: 12, targetRpe: 8.0, weight: 50, reps: 12, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd1_abwheel', name: 'Ab Wheel Rollouts', barType: 'BW', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Strict hollow-body pelvic tuck; halt range of motion before any lumbar extension.',
                         sets: [
-                            { id: 'd1_ab_1', type: 'WORKING', weight: 200, reps: 12, rpe: 8.0, completed: false },
-                            { id: 'd1_ab_2', type: 'WORKING', weight: 200, reps: 12, rpe: 8.0, completed: false },
-                            { id: 'd1_ab_3', type: 'WORKING', weight: 200, reps: 12, rpe: 8.0, completed: false }
+                            { id: 'd1_ab_1', type: 'WORK', targetDesc: 'BW × 12 @ RPE 8.0', targetWeight: 200, targetReps: 12, targetRpe: 8.0, weight: 200, reps: 12, rpe: 8.0, completed: false },
+                            { id: 'd1_ab_2', type: 'WORK', targetDesc: 'BW × 12 @ RPE 8.0', targetWeight: 200, targetReps: 12, targetRpe: 8.0, weight: 200, reps: 12, rpe: 8.0, completed: false },
+                            { id: 'd1_ab_3', type: 'WORK', targetDesc: 'BW × 12 @ RPE 8.0', targetWeight: 200, targetReps: 12, targetRpe: 8.0, weight: 200, reps: 12, rpe: 8.0, completed: false }
                         ]
                     }
                 ]
@@ -1005,41 +956,41 @@
                         id: 'd2_ssb', name: 'Safety Squat Bar (SSB) Squat [70 lb Bar]', barType: '70lb_SSB', liftKey: 'squat', isAxial: true, isUnsupportedHinge: false, restSeconds: 210,
                         cue: 'Keep hands relaxed on handles; drive neck and upper traps UP and BACK into the pad out of the hole.',
                         sets: [
-                            { id: 'd2_s_w1', type: 'WARMUP', weight: 160, reps: 5, rpe: 6.0, completed: true },
-                            { id: 'd2_s_w2', type: 'WARMUP', weight: 210, reps: 3, rpe: 6.5, completed: true },
-                            { id: 'd2_s_w3', type: 'EVAL', weight: 250, reps: 1, rpe: 7.0, completed: true },
-                            { id: 'd2_s_top', type: 'TOP SET', weight: 270, reps: 5, rpe: 8.0, completed: false },
-                            { id: 'd2_s_bo1', type: 'BACK-OFF', weight: 235, reps: 5, rpe: 7.5, completed: false },
-                            { id: 'd2_s_bo2', type: 'BACK-OFF', weight: 235, reps: 5, rpe: 7.5, completed: false },
-                            { id: 'd2_s_bo3', type: 'BACK-OFF', weight: 235, reps: 5, rpe: 7.5, completed: false }
+                            { id: 'd2_s_w1', type: 'WARMUP', targetDesc: '160 lbs × 5 @ RPE 6.0', targetWeight: 160, targetReps: 5, targetRpe: 6.0, weight: 160, reps: 5, rpe: 6.0, completed: true },
+                            { id: 'd2_s_w2', type: 'WARMUP', targetDesc: '210 lbs × 3 @ RPE 6.5', targetWeight: 210, targetReps: 3, targetRpe: 6.5, weight: 210, reps: 3, rpe: 6.5, completed: true },
+                            { id: 'd2_s_w3', type: 'EVAL', targetDesc: '250 lbs × 1 @ RPE 7.0', targetWeight: 250, targetReps: 1, targetRpe: 7.0, weight: 250, reps: 1, rpe: 7.0, completed: true },
+                            { id: 'd2_s_top', type: 'TOP SET', targetDesc: '270 lbs × 5 @ RPE 8.0', targetWeight: 270, targetReps: 5, targetRpe: 8.0, weight: 270, reps: 5, rpe: 8.0, completed: false },
+                            { id: 'd2_s_bo1', type: 'BACK-OFF', targetDesc: '235 lbs × 5 @ RPE 7.5', targetWeight: 235, targetReps: 5, targetRpe: 7.5, weight: 235, reps: 5, rpe: 7.5, completed: false },
+                            { id: 'd2_s_bo2', type: 'BACK-OFF', targetDesc: '235 lbs × 5 @ RPE 7.5', targetWeight: 235, targetReps: 5, targetRpe: 7.5, weight: 235, reps: 5, rpe: 7.5, completed: false },
+                            { id: 'd2_s_bo3', type: 'BACK-OFF', targetDesc: '235 lbs × 5 @ RPE 7.5', targetWeight: 235, targetReps: 5, targetRpe: 7.5, weight: 235, reps: 5, rpe: 7.5, completed: false }
                         ]
                     },
                     {
                         id: 'd2_hatfield', name: 'Hatfield SSB Bulgarian Split Squats', barType: '70lb_SSB', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 90,
                         cue: 'Hold Rogue rack uprights at chest height for balance; sink straight down with a vertical spine.',
                         sets: [
-                            { id: 'd2_h_1', type: 'WORKING', weight: 130, reps: 8, rpe: 8.0, completed: false },
-                            { id: 'd2_h_2', type: 'WORKING', weight: 130, reps: 8, rpe: 8.0, completed: false },
-                            { id: 'd2_h_3', type: 'WORKING', weight: 130, reps: 8, rpe: 8.0, completed: false }
+                            { id: 'd2_h_1', type: 'WORK', targetDesc: '130 lbs × 8/leg @ RPE 8.0', targetWeight: 130, targetReps: 8, targetRpe: 8.0, weight: 130, reps: 8, rpe: 8.0, completed: false },
+                            { id: 'd2_h_2', type: 'WORK', targetDesc: '130 lbs × 8/leg @ RPE 8.0', targetWeight: 130, targetReps: 8, targetRpe: 8.0, weight: 130, reps: 8, rpe: 8.0, completed: false },
+                            { id: 'd2_h_3', type: 'WORK', targetDesc: '130 lbs × 8/leg @ RPE 8.0', targetWeight: 130, targetReps: 8, targetRpe: 8.0, weight: 130, reps: 8, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd2_ghd', name: 'Rogue GHD Back Raises', barType: 'Plate', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 90,
                         cue: 'Hinge strictly at hips with braced neutral spine; squeeze glutes to horizontal—zero hyperextension.',
                         sets: [
-                            { id: 'd2_g_1', type: 'WORKING', weight: 25, reps: 12, rpe: 7.5, completed: false },
-                            { id: 'd2_g_2', type: 'WORKING', weight: 25, reps: 12, rpe: 7.5, completed: false },
-                            { id: 'd2_g_3', type: 'WORKING', weight: 25, reps: 12, rpe: 7.5, completed: false }
+                            { id: 'd2_g_1', type: 'WORK', targetDesc: '+25 lbs × 10–12 @ RPE 7.5', targetWeight: 25, targetReps: 12, targetRpe: 7.5, weight: 25, reps: 12, rpe: 7.5, completed: false },
+                            { id: 'd2_g_2', type: 'WORK', targetDesc: '+25 lbs × 10–12 @ RPE 7.5', targetWeight: 25, targetReps: 12, targetRpe: 7.5, weight: 25, reps: 12, rpe: 7.5, completed: false },
+                            { id: 'd2_g_3', type: 'WORK', targetDesc: '+25 lbs × 10–12 @ RPE 7.5', targetWeight: 25, targetReps: 12, targetRpe: 7.5, weight: 25, reps: 12, rpe: 7.5, completed: false }
                         ]
                     },
                     {
                         id: 'd2_calves', name: 'Standing Calf Raises (2s Bottom Pause)', barType: 'BW', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 45,
                         cue: 'Off bumper plate ledge with a strict 2-second dead pause at the bottom stretch.',
                         sets: [
-                            { id: 'd2_c_1', type: 'WORKING', weight: 200, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd2_c_2', type: 'WORKING', weight: 200, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd2_c_3', type: 'WORKING', weight: 200, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd2_c_4', type: 'WORKING', weight: 200, reps: 15, rpe: 8.0, completed: false }
+                            { id: 'd2_c_1', type: 'WORK', targetDesc: 'BW × 15 @ RPE 8.0', targetWeight: 200, targetReps: 15, targetRpe: 8.0, weight: 200, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd2_c_2', type: 'WORK', targetDesc: 'BW × 15 @ RPE 8.0', targetWeight: 200, targetReps: 15, targetRpe: 8.0, weight: 200, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd2_c_3', type: 'WORK', targetDesc: 'BW × 15 @ RPE 8.0', targetWeight: 200, targetReps: 15, targetRpe: 8.0, weight: 200, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd2_c_4', type: 'WORK', targetDesc: 'BW × 15 @ RPE 8.0', targetWeight: 200, targetReps: 15, targetRpe: 8.0, weight: 200, reps: 15, rpe: 8.0, completed: false }
                         ]
                     }
                 ]
@@ -1057,56 +1008,56 @@
                         id: 'd3_pullups', name: 'Weighted Pull-Ups (BW 200 + 35 lbs)', barType: 'DipBelt', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 180,
                         cue: 'Full dead hang at bottom; depress scapulae and drive elbows to ribs. Zero kipping.',
                         sets: [
-                            { id: 'd3_pu_1', type: 'WORKING', weight: 35, reps: 5, rpe: 8.0, completed: false },
-                            { id: 'd3_pu_2', type: 'WORKING', weight: 35, reps: 5, rpe: 8.0, completed: false },
-                            { id: 'd3_pu_3', type: 'WORKING', weight: 35, reps: 5, rpe: 8.0, completed: false },
-                            { id: 'd3_pu_4', type: 'WORKING', weight: 35, reps: 5, rpe: 8.0, completed: false }
+                            { id: 'd3_pu_1', type: 'WORK', targetDesc: '+35 lbs × 5 @ RPE 8.0', targetWeight: 35, targetReps: 5, targetRpe: 8.0, weight: 35, reps: 5, rpe: 8.0, completed: false },
+                            { id: 'd3_pu_2', type: 'WORK', targetDesc: '+35 lbs × 5 @ RPE 8.0', targetWeight: 35, targetReps: 5, targetRpe: 8.0, weight: 35, reps: 5, rpe: 8.0, completed: false },
+                            { id: 'd3_pu_3', type: 'WORK', targetDesc: '+35 lbs × 5 @ RPE 8.0', targetWeight: 35, targetReps: 5, targetRpe: 8.0, weight: 35, reps: 5, rpe: 8.0, completed: false },
+                            { id: 'd3_pu_4', type: 'WORK', targetDesc: '+35 lbs × 5 @ RPE 8.0', targetWeight: 35, targetReps: 5, targetRpe: 8.0, weight: 35, reps: 5, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd3_cs_rows', name: 'Chest-Supported DB Rows (30–45° Incline)', barType: 'DB', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 120,
                         cue: 'Sternum glued flat to bench pad; pull dumbbells toward hip pockets with a 1-second peak squeeze.',
                         sets: [
-                            { id: 'd3_csr_1', type: 'WORKING', weight: 85, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd3_csr_2', type: 'WORKING', weight: 85, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd3_csr_3', type: 'WORKING', weight: 85, reps: 9, rpe: 8.0, completed: false },
-                            { id: 'd3_csr_4', type: 'WORKING', weight: 85, reps: 8, rpe: 8.0, completed: false }
+                            { id: 'd3_csr_1', type: 'WORK', targetDesc: '85 lb DBs × 8–10 @ RPE 8.0', targetWeight: 85, targetReps: 10, targetRpe: 8.0, weight: 85, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd3_csr_2', type: 'WORK', targetDesc: '85 lb DBs × 8–10 @ RPE 8.0', targetWeight: 85, targetReps: 10, targetRpe: 8.0, weight: 85, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd3_csr_3', type: 'WORK', targetDesc: '85 lb DBs × 8–10 @ RPE 8.0', targetWeight: 85, targetReps: 9, targetRpe: 8.0, weight: 85, reps: 9, rpe: 8.0, completed: false },
+                            { id: 'd3_csr_4', type: 'WORK', targetDesc: '85 lb DBs × 8–10 @ RPE 8.0', targetWeight: 85, targetReps: 8, targetRpe: 8.0, weight: 85, reps: 8, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd3_lat_pd', name: 'Neutral-Grip Lat Pulldowns', barType: 'Cable', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 90,
                         cue: 'Controlled stretch at top; keep ribcage pinned down without lumbar extension.',
                         sets: [
-                            { id: 'd3_lpd_1', type: 'WORKING', weight: 160, reps: 12, rpe: 8.0, completed: false },
-                            { id: 'd3_lpd_2', type: 'WORKING', weight: 160, reps: 11, rpe: 8.0, completed: false },
-                            { id: 'd3_lpd_3', type: 'WORKING', weight: 160, reps: 10, rpe: 8.0, completed: false }
+                            { id: 'd3_lpd_1', type: 'WORK', targetDesc: '160 lbs × 10–12 @ RPE 8.0', targetWeight: 160, targetReps: 12, targetRpe: 8.0, weight: 160, reps: 12, rpe: 8.0, completed: false },
+                            { id: 'd3_lpd_2', type: 'WORK', targetDesc: '160 lbs × 10–12 @ RPE 8.0', targetWeight: 160, targetReps: 11, targetRpe: 8.0, weight: 160, reps: 11, rpe: 8.0, completed: false },
+                            { id: 'd3_lpd_3', type: 'WORK', targetDesc: '160 lbs × 10–12 @ RPE 8.0', targetWeight: 160, targetReps: 10, targetRpe: 8.0, weight: 160, reps: 10, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd3_face_pulls', name: 'Cable Face Pulls', barType: 'Cable', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Calibrated at 50 lbs × 15 reps. Pull high to eye level and rotate thumbs backward.',
                         sets: [
-                            { id: 'd3_fp_1', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd3_fp_2', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd3_fp_3', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false }
+                            { id: 'd3_fp_1', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd3_fp_2', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd3_fp_3', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd3_hammer', name: 'Standing DB Hammer Curls', barType: 'DB', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Lock glutes tight; zero torso swing.',
                         sets: [
-                            { id: 'd3_hc_1', type: 'WORKING', weight: 45, reps: 12, rpe: 8.0, completed: false },
-                            { id: 'd3_hc_2', type: 'WORKING', weight: 45, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd3_hc_3', type: 'WORKING', weight: 45, reps: 10, rpe: 8.0, completed: false }
+                            { id: 'd3_hc_1', type: 'WORK', targetDesc: '45 lb DBs × 10–12 @ RPE 8.0', targetWeight: 45, targetReps: 12, targetRpe: 8.0, weight: 45, reps: 12, rpe: 8.0, completed: false },
+                            { id: 'd3_hc_2', type: 'WORK', targetDesc: '45 lb DBs × 10–12 @ RPE 8.0', targetWeight: 45, targetReps: 10, targetRpe: 8.0, weight: 45, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd3_hc_3', type: 'WORK', targetDesc: '45 lb DBs × 10–12 @ RPE 8.0', targetWeight: 45, targetReps: 10, targetRpe: 8.0, weight: 45, reps: 10, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd3_incline_curl', name: 'Incline DB Biceps Curls (45°)', barType: 'DB', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Full long-head stretch at bottom; supinate wrists hard at top.',
                         sets: [
-                            { id: 'd3_ic_1', type: 'WORKING', weight: 35, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd3_ic_2', type: 'WORKING', weight: 35, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd3_ic_3', type: 'WORKING', weight: 35, reps: 10, rpe: 8.0, completed: false }
+                            { id: 'd3_ic_1', type: 'WORK', targetDesc: '35 lb DBs × 10 @ RPE 8.0', targetWeight: 35, targetReps: 10, targetRpe: 8.0, weight: 35, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd3_ic_2', type: 'WORK', targetDesc: '35 lb DBs × 10 @ RPE 8.0', targetWeight: 35, targetReps: 10, targetRpe: 8.0, weight: 35, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd3_ic_3', type: 'WORK', targetDesc: '35 lb DBs × 10 @ RPE 8.0', targetWeight: 35, targetReps: 10, targetRpe: 8.0, weight: 35, reps: 10, rpe: 8.0, completed: false }
                         ]
                     }
                 ]
@@ -1124,32 +1075,32 @@
                         id: 'd4_deadlift', name: 'Conventional Barbell Deadlift (Dead-Stop)', barType: '45lb', liftKey: 'deadlift', isAxial: true, isUnsupportedHinge: false, restSeconds: 240,
                         cue: 'Pull slack out of bar, wedge hips, leg-press floor away. Reset 360° belt brace on the floor between reps.',
                         sets: [
-                            { id: 'd4_dl_w1', type: 'WARMUP', weight: 135, reps: 5, rpe: 6.0, completed: true },
-                            { id: 'd4_dl_w2', type: 'WARMUP', weight: 225, reps: 3, rpe: 6.0, completed: true },
-                            { id: 'd4_dl_w3', type: 'WARMUP', weight: 315, reps: 2, rpe: 6.5, completed: true },
-                            { id: 'd4_dl_ev', type: 'EVAL', weight: 365, reps: 1, rpe: 7.0, completed: true },
-                            { id: 'd4_dl_top', type: 'TOP SET', weight: 385, reps: 3, rpe: 7.5, completed: false },
-                            { id: 'd4_dl_bo1', type: 'BACK-OFF', weight: 355, reps: 4, rpe: 7.5, completed: false },
-                            { id: 'd4_dl_bo2', type: 'BACK-OFF', weight: 355, reps: 4, rpe: 7.5, completed: false },
-                            { id: 'd4_dl_bo3', type: 'BACK-OFF', weight: 355, reps: 4, rpe: 7.5, completed: false }
+                            { id: 'd4_dl_w1', type: 'WARMUP', targetDesc: '135 lbs × 5 @ RPE 6.0', targetWeight: 135, targetReps: 5, targetRpe: 6.0, weight: 135, reps: 5, rpe: 6.0, completed: true },
+                            { id: 'd4_dl_w2', type: 'WARMUP', targetDesc: '225 lbs × 3 @ RPE 6.0', targetWeight: 225, targetReps: 3, targetRpe: 6.0, weight: 225, reps: 3, rpe: 6.0, completed: true },
+                            { id: 'd4_dl_w3', type: 'WARMUP', targetDesc: '315 lbs × 2 @ RPE 6.5', targetWeight: 315, targetReps: 2, targetRpe: 6.5, weight: 315, reps: 2, rpe: 6.5, completed: true },
+                            { id: 'd4_dl_ev', type: 'EVAL', targetDesc: '365 lbs × 1 @ RPE 7.0', targetWeight: 365, targetReps: 1, targetRpe: 7.0, weight: 365, reps: 1, rpe: 7.0, completed: true },
+                            { id: 'd4_dl_top', type: 'TOP SET', targetDesc: '385 lbs × 3 @ RPE 7.5', targetWeight: 385, targetReps: 3, targetRpe: 7.5, weight: 385, reps: 3, rpe: 7.5, completed: false },
+                            { id: 'd4_dl_bo1', type: 'BACK-OFF', targetDesc: '355 lbs × 4 @ RPE 7.5', targetWeight: 355, targetReps: 4, targetRpe: 7.5, weight: 355, reps: 4, rpe: 7.5, completed: false },
+                            { id: 'd4_dl_bo2', type: 'BACK-OFF', targetDesc: '355 lbs × 4 @ RPE 7.5', targetWeight: 355, targetReps: 4, targetRpe: 7.5, weight: 355, reps: 4, rpe: 7.5, completed: false },
+                            { id: 'd4_dl_bo3', type: 'BACK-OFF', targetDesc: '355 lbs × 4 @ RPE 7.5', targetWeight: 355, targetReps: 4, targetRpe: 7.5, weight: 355, reps: 4, rpe: 7.5, completed: false }
                         ]
                     },
                     {
                         id: 'd4_ssb_squat', name: 'Safety Squat Bar (SSB) Squats [70 lb Bar]', barType: '70lb_SSB', liftKey: 'squat', isAxial: true, isUnsupportedHinge: false, restSeconds: 150,
-                        cue: '70 lb SSB + two 45s & two 25s (210 lbs). Upright torso quad builder after floor pulls.',
+                        cue: '70 lb SSB + one 45 & one 25/side (210 lbs). Upright torso quad builder after floor pulls.',
                         sets: [
-                            { id: 'd4_ssb_1', type: 'WORKING', weight: 210, reps: 8, rpe: 7.5, completed: false },
-                            { id: 'd4_ssb_2', type: 'WORKING', weight: 210, reps: 8, rpe: 7.5, completed: false },
-                            { id: 'd4_ssb_3', type: 'WORKING', weight: 210, reps: 6, rpe: 7.5, completed: false }
+                            { id: 'd4_ssb_1', type: 'WORK', targetDesc: '210 lbs × 6–8 @ RPE 7.5', targetWeight: 210, targetReps: 8, targetRpe: 7.5, weight: 210, reps: 8, rpe: 7.5, completed: false },
+                            { id: 'd4_ssb_2', type: 'WORK', targetDesc: '210 lbs × 6–8 @ RPE 7.5', targetWeight: 210, targetReps: 8, targetRpe: 7.5, weight: 210, reps: 8, rpe: 7.5, completed: false },
+                            { id: 'd4_ssb_3', type: 'WORK', targetDesc: '210 lbs × 6–8 @ RPE 7.5', targetWeight: 210, targetReps: 6, targetRpe: 7.5, weight: 210, reps: 6, rpe: 7.5, completed: false }
                         ]
                     },
                     {
                         id: 'd4_ghd', name: 'Rogue GHD Back Raises', barType: 'Plate', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 90,
                         cue: 'Hinge strictly at hips; squeeze glutes and hamstrings to horizontal—no lumbar hyperextension.',
                         sets: [
-                            { id: 'd4_g_1', type: 'WORKING', weight: 25, reps: 12, rpe: 7.5, completed: false },
-                            { id: 'd4_g_2', type: 'WORKING', weight: 25, reps: 12, rpe: 7.5, completed: false },
-                            { id: 'd4_g_3', type: 'WORKING', weight: 25, reps: 12, rpe: 7.5, completed: false }
+                            { id: 'd4_g_1', type: 'WORK', targetDesc: '+25 lbs × 12 @ RPE 7.5', targetWeight: 25, targetReps: 12, targetRpe: 7.5, weight: 25, reps: 12, rpe: 7.5, completed: false },
+                            { id: 'd4_g_2', type: 'WORK', targetDesc: '+25 lbs × 12 @ RPE 7.5', targetWeight: 25, targetReps: 12, targetRpe: 7.5, weight: 25, reps: 12, rpe: 7.5, completed: false },
+                            { id: 'd4_g_3', type: 'WORK', targetDesc: '+25 lbs × 12 @ RPE 7.5', targetWeight: 25, targetReps: 12, targetRpe: 7.5, weight: 25, reps: 12, rpe: 7.5, completed: false }
                         ]
                     }
                 ]
@@ -1167,46 +1118,46 @@
                         id: 'd5_seated_ohp', name: 'Seated DB Shoulder Press (75° Incline)', barType: 'DB', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 120,
                         cue: 'Calibrated at 55 lbs × 3×8–10. Keep upper back and head pressed firmly into the bench pad.',
                         sets: [
-                            { id: 'd5_so_1', type: 'WORKING', weight: 55, reps: 9, rpe: 8.0, completed: false },
-                            { id: 'd5_so_2', type: 'WORKING', weight: 55, reps: 9, rpe: 8.0, completed: false },
-                            { id: 'd5_so_3', type: 'WORKING', weight: 55, reps: 8, rpe: 8.5, completed: false }
+                            { id: 'd5_so_1', type: 'WORK', targetDesc: '55 lb DBs × 8–10 @ RPE 8.0', targetWeight: 55, targetReps: 9, targetRpe: 8.0, weight: 55, reps: 9, rpe: 8.0, completed: false },
+                            { id: 'd5_so_2', type: 'WORK', targetDesc: '55 lb DBs × 8–10 @ RPE 8.0', targetWeight: 55, targetReps: 9, targetRpe: 8.0, weight: 55, reps: 9, rpe: 8.0, completed: false },
+                            { id: 'd5_so_3', type: 'WORK', targetDesc: '55 lb DBs × 8–10 @ RPE 8.5', targetWeight: 55, targetReps: 8, targetRpe: 8.5, weight: 55, reps: 8, rpe: 8.5, completed: false }
                         ]
                     },
                     {
                         id: 'd5_laterals', name: 'Seated DB Lateral Raises', barType: 'DB', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Calibrated at 20 lbs × 4×12 to failure. Perform seated against pad to eliminate momentum.',
                         sets: [
-                            { id: 'd5_lr_1', type: 'WORKING', weight: 20, reps: 12, rpe: 9.0, completed: false },
-                            { id: 'd5_lr_2', type: 'WORKING', weight: 20, reps: 12, rpe: 9.5, completed: false },
-                            { id: 'd5_lr_3', type: 'WORKING', weight: 20, reps: 12, rpe: 9.5, completed: false },
-                            { id: 'd5_lr_4', type: 'WORKING', weight: 20, reps: 12, rpe: 9.5, completed: false }
+                            { id: 'd5_lr_1', type: 'WORK', targetDesc: '20 lb DBs × 12–15 @ RPE 9.0', targetWeight: 20, targetReps: 12, targetRpe: 9.0, weight: 20, reps: 12, rpe: 9.0, completed: false },
+                            { id: 'd5_lr_2', type: 'WORK', targetDesc: '20 lb DBs × 12–15 @ RPE 9.5', targetWeight: 20, targetReps: 12, targetRpe: 9.5, weight: 20, reps: 12, rpe: 9.5, completed: false },
+                            { id: 'd5_lr_3', type: 'WORK', targetDesc: '20 lb DBs × 12–15 @ RPE 9.5', targetWeight: 20, targetReps: 12, targetRpe: 9.5, weight: 20, reps: 12, rpe: 9.5, completed: false },
+                            { id: 'd5_lr_4', type: 'WORK', targetDesc: '20 lb DBs × 12–15 @ RPE 9.5', targetWeight: 20, targetReps: 12, targetRpe: 9.5, weight: 20, reps: 12, rpe: 9.5, completed: false }
                         ]
                     },
                     {
                         id: 'd5_dips', name: 'Parallel Bar Dips', barType: 'BW', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 90,
                         cue: 'Controlled descent; let legs hang slack to decompress the lower back.',
                         sets: [
-                            { id: 'd5_dp_1', type: 'WORKING', weight: 200, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd5_dp_2', type: 'WORKING', weight: 200, reps: 10, rpe: 8.0, completed: false },
-                            { id: 'd5_dp_3', type: 'WORKING', weight: 200, reps: 10, rpe: 8.0, completed: false }
+                            { id: 'd5_dp_1', type: 'WORK', targetDesc: '200 lbs (BW) × 10 @ RPE 8.0', targetWeight: 200, targetReps: 10, targetRpe: 8.0, weight: 200, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd5_dp_2', type: 'WORK', targetDesc: '200 lbs (BW) × 10 @ RPE 8.0', targetWeight: 200, targetReps: 10, targetRpe: 8.0, weight: 200, reps: 10, rpe: 8.0, completed: false },
+                            { id: 'd5_dp_3', type: 'WORK', targetDesc: '200 lbs (BW) × 10 @ RPE 8.0', targetWeight: 200, targetReps: 10, targetRpe: 8.0, weight: 200, reps: 10, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd5_face_pulls', name: 'Cable Face Pulls', barType: 'Cable', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Calibrated at 50 lbs × 3×15. Flare hands wide and squeeze rear delts.',
                         sets: [
-                            { id: 'd5_fp_1', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd5_fp_2', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd5_fp_3', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false }
+                            { id: 'd5_fp_1', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd5_fp_2', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd5_fp_3', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false }
                         ]
                     },
                     {
                         id: 'd5_pushdowns', name: 'Triceps Rope Pushdowns', barType: 'Cable', liftKey: null, isAxial: false, isUnsupportedHinge: false, restSeconds: 60,
                         cue: 'Pin elbows to ribs; spread rope handles aggressively at bottom.',
                         sets: [
-                            { id: 'd5_tp_1', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd5_tp_2', type: 'WORKING', weight: 50, reps: 15, rpe: 8.0, completed: false },
-                            { id: 'd5_tp_3', type: 'WORKING', weight: 50, reps: 15, rpe: 8.5, completed: false }
+                            { id: 'd5_tp_1', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd5_tp_2', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.0', targetWeight: 50, targetReps: 15, targetRpe: 8.0, weight: 50, reps: 15, rpe: 8.0, completed: false },
+                            { id: 'd5_tp_3', type: 'WORK', targetDesc: '50 lbs × 15 @ RPE 8.5', targetWeight: 50, targetReps: 15, targetRpe: 8.5, weight: 50, reps: 15, rpe: 8.5, completed: false }
                         ]
                     }
                 ]
@@ -1316,9 +1267,10 @@
         // ====================================================================
         // 3. PERSISTENT STATE INITIALIZATION (LOCALSTORAGE)
         // ====================================================================
-        const STORAGE_KEY_TEMPLATES = 'argon_345_templates_v2';
-        const STORAGE_KEY_ACTIVE_DAY = 'argon_345_active_day_v2';
-        const STORAGE_KEY_HISTORY = 'argon_345_history_v2';
+        const STORAGE_KEY_TEMPLATES = 'argon_345_templates_v3';
+        const STORAGE_KEY_ACTIVE_DAY = 'argon_345_active_day_v3';
+        const STORAGE_KEY_HISTORY = 'argon_345_history_v3';
+        const STORAGE_KEY_CHAT = 'argon_345_chat_v3';
         const STORAGE_KEY_API_KEY = 'argon_345_gemini_api_key';
 
         let workoutTemplates = {};
@@ -1326,13 +1278,16 @@
         let historyLogs = [];
         let calcSelectedBarWeight = 70;
 
-        let coachMessages = [
+        const INITIAL_COACH_WELCOME = [
             {
                 role: 'assistant',
-                text: 'Welcome back to the platform. Your **315 Bench / 405 Squat (70 lb SSB) / 495 Deadlift** progression and **4×/wk Norwegian 4×4** schedule are locked in.\n\nLog your sets in the center workspace, or tell me how a set felt and I will modify your active workout in real time.',
+                badge: 'READY ON PLATFORM',
+                text: 'Your **315 Bench / 405 Squat (70 lb SSB) / 495 Deadlift** progression is active.\n\nClick **Log Set** on any exercise row to start your rest timer and receive instant AI Coach set telemetry, e1RM tracking, and next-set loading advice right here as you scroll.',
                 mutated: false
             }
         ];
+
+        let coachMessages = [];
 
         function loadPersistedState() {
             try {
@@ -1346,9 +1301,13 @@
 
                 const savedHistory = localStorage.getItem(STORAGE_KEY_HISTORY);
                 historyLogs = savedHistory ? JSON.parse(savedHistory) : JSON.parse(JSON.stringify(DEFAULT_HISTORY_LOGS));
+
+                const savedChat = localStorage.getItem(STORAGE_KEY_CHAT);
+                coachMessages = savedChat ? JSON.parse(savedChat) : JSON.parse(JSON.stringify(INITIAL_COACH_WELCOME));
             } catch (e) {
                 workoutTemplates = JSON.parse(JSON.stringify(DEFAULT_WORKOUT_TEMPLATES));
                 historyLogs = JSON.parse(JSON.stringify(DEFAULT_HISTORY_LOGS));
+                coachMessages = JSON.parse(JSON.stringify(INITIAL_COACH_WELCOME));
             }
             updateApiKeyBadge();
         }
@@ -1358,14 +1317,15 @@
                 localStorage.setItem(STORAGE_KEY_TEMPLATES, JSON.stringify(workoutTemplates));
                 localStorage.setItem(STORAGE_KEY_ACTIVE_DAY, currentDayId);
                 localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(historyLogs));
+                localStorage.setItem(STORAGE_KEY_CHAT, JSON.stringify(coachMessages.slice(-35)));
             } catch (e) {
-                console.debug('Storage quota notice:', e);
+                console.debug('Storage notice:', e);
             }
             refreshTopTelemetryCards();
         }
 
         // ====================================================================
-        // 4. WEB AUDIO SYNTHESIZER FOR TIMER BEEPS (NO EXTERNAL AUDIO FILES)
+        // 4. WEB AUDIO SYNTHESIZER FOR TIMER BEEPS
         // ====================================================================
         function playTimerBeep(freq = 880, durationMs = 220) {
             try {
@@ -1382,9 +1342,7 @@
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + durationMs / 1000);
-            } catch (e) {
-                // Ignore if browser autoplay policy blocks audio prior to interaction
-            }
+            } catch (e) {}
         }
 
         function showToast(msg) {
@@ -1395,7 +1353,7 @@
             setTimeout(() => {
                 banner.classList.remove('flex');
                 banner.classList.add('hidden');
-            }, 3500);
+            }, 3200);
         }
 
         // ====================================================================
@@ -1408,18 +1366,18 @@
                 const btn = document.getElementById('navBtn-' + m);
                 if (m === modId) {
                     el.classList.remove('hidden');
-                    btn.className = 'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-md shadow-blue-600/25 transition text-left shrink-0';
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm shadow-blue-600/30 transition flex items-center gap-1.5';
                 } else {
                     el.classList.add('hidden');
-                    btn.className = 'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition text-left shrink-0';
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155] transition flex items-center gap-1.5';
                 }
             });
         }
 
         function refreshTopTelemetryCards() {
-            let bestBench = { e1rm: 306, text: 'Top: 255 lbs × 5 @ RPE 8' };
-            let bestSquat = { e1rm: 333, text: 'Top: 270 lbs × 5 (SSB) @ RPE 8' };
-            let bestDeadlift = { e1rm: 451, text: 'Top: 385 lbs × 3 @ RPE 7.5' };
+            let bestBench = { e1rm: 306, text: 'Top: 255×5 @ RPE 8' };
+            let bestSquat = { e1rm: 333, text: 'Top: 270×5 (SSB) @ RPE 8' };
+            let bestDeadlift = { e1rm: 451, text: 'Top: 385×3 @ RPE 7.5' };
 
             Object.values(workoutTemplates).forEach(tpl => {
                 tpl.exercises.forEach(ex => {
@@ -1427,13 +1385,13 @@
                         if (s.type !== 'WARMUP') {
                             const e1rm = computeE1RM(s.weight, s.reps, s.rpe);
                             if (ex.liftKey === 'bench' && e1rm > bestBench.e1rm) {
-                                bestBench = { e1rm, text: `Top: ${s.weight} lbs × ${s.reps} @ RPE ${s.rpe}` };
+                                bestBench = { e1rm, text: `Top: ${s.weight}×${s.reps} @ RPE ${s.rpe}` };
                             }
                             if (ex.liftKey === 'squat' && e1rm > bestSquat.e1rm) {
-                                bestSquat = { e1rm, text: `Top: ${s.weight} lbs × ${s.reps} @ RPE ${s.rpe}` };
+                                bestSquat = { e1rm, text: `Top: ${s.weight}×${s.reps} @ RPE ${s.rpe}` };
                             }
                             if (ex.liftKey === 'deadlift' && e1rm > bestDeadlift.e1rm) {
-                                bestDeadlift = { e1rm, text: `Top: ${s.weight} lbs × ${s.reps} @ RPE ${s.rpe}` };
+                                bestDeadlift = { e1rm, text: `Top: ${s.weight}×${s.reps} @ RPE ${s.rpe}` };
                             }
                         }
                     });
@@ -1447,26 +1405,26 @@
             const totalPct = Math.min(100, Math.round((totalE1rm / 1215) * 100));
 
             document.getElementById('cardBenchE1rm').innerText = bestBench.e1rm;
-            document.getElementById('cardBenchBar').style.width = benchPct + '%';
             document.getElementById('cardBenchTopText').innerText = bestBench.text;
             document.getElementById('cardBenchPctText').innerText = benchPct + '%';
 
             document.getElementById('cardSquatE1rm').innerText = bestSquat.e1rm;
-            document.getElementById('cardSquatBar').style.width = squatPct + '%';
             document.getElementById('cardSquatTopText').innerText = bestSquat.text;
             document.getElementById('cardSquatPctText').innerText = squatPct + '%';
 
             document.getElementById('cardDeadliftE1rm').innerText = bestDeadlift.e1rm;
-            document.getElementById('cardDeadliftBar').style.width = dlPct + '%';
             document.getElementById('cardDeadliftTopText').innerText = bestDeadlift.text;
             document.getElementById('cardDeadliftPctText').innerText = dlPct + '%';
 
             document.getElementById('cardTotalE1rm').innerText = totalE1rm.toLocaleString();
             document.getElementById('cardTotalPct').innerText = totalPct + '%';
+
+            const navHistEl = document.getElementById('navHistoryCount');
+            if (navHistEl) navHistEl.innerText = historyLogs.length;
         }
 
         // ====================================================================
-        // 6. WORKOUT LOGGER RENDERING & HANDLERS
+        // 6. WORKOUT LOGGER RENDERING (NO HORIZONTAL SCROLLING IN LIFT CARDS)
         // ====================================================================
         function selectWorkoutDay(dayId) {
             if (!workoutTemplates[dayId]) return;
@@ -1478,33 +1436,17 @@
         }
 
         function renderDaySwitchers() {
-            const sidebarList = document.getElementById('sidebarDayList');
             const topPills = document.getElementById('topDaySelectorPills');
-            sidebarList.innerHTML = '';
             topPills.innerHTML = '';
 
             Object.values(workoutTemplates).forEach(tpl => {
                 const isSelected = tpl.id === currentDayId;
-
-                // Sidebar button
-                const sBtn = document.createElement('button');
-                sBtn.type = 'button';
-                sBtn.onclick = () => selectWorkoutDay(tpl.id);
-                sBtn.className = `w-full px-3 py-2 rounded-xl text-xs font-mono font-bold text-left transition shrink-0 ${
-                    isSelected
-                        ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                        : 'bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155]'
-                }`;
-                sBtn.innerText = tpl.shortLabel;
-                sidebarList.appendChild(sBtn);
-
-                // Top pill button
                 const pBtn = document.createElement('button');
                 pBtn.type = 'button';
                 pBtn.onclick = () => selectWorkoutDay(tpl.id);
-                pBtn.className = `px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition ${
+                pBtn.className = `px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition ${
                     isSelected
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                        ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
                         : 'bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#334155]'
                 }`;
                 pBtn.innerText = tpl.shortLabel;
@@ -1544,88 +1486,140 @@
                 const isBar45 = ex.barType === '45lb';
                 const barWeight = isSSB ? 70 : isBar45 ? 45 : null;
 
-                const card = document.createElement('div');
-                card.className = 'bg-[#1e293b] border border-[#334155] rounded-2xl overflow-hidden shadow-lg';
+                // Check if this axial exercise has any set logged/selected at RPE >= 9.5
+                const hasHighRpeAxialSet = ex.isAxial && ex.sets.some(s => parseFloat(s.rpe) >= 9.5);
 
-                let rowsHtml = '';
+                const card = document.createElement('div');
+                card.className = 'bg-[#1e293b] border border-[#334155] rounded-2xl overflow-visible shadow-lg';
+
+                let setRowsHtml = '';
                 ex.sets.forEach((s, sIdx) => {
                     const e1rmVal = s.type === 'WARMUP' ? null : computeE1RM(s.weight, s.reps, s.rpe);
                     const plateInfo = barWeight ? computePlatesPerSide(s.weight, barWeight) : null;
-                    const plateString = plateInfo
-                        ? (plateInfo.plates.length > 0 ? `[${plateInfo.plates.join(' + ')}]` : 'Empty Bar')
-                        : '—';
+                    const compactPlateText = plateInfo ? formatCompactPlates(plateInfo.plates) : ex.barType;
                     const isDangerRpe = ex.isAxial && parseFloat(s.rpe) >= 9.5;
+                    const prescriptionText = s.targetDesc || `${s.targetWeight || s.weight} lbs × ${s.targetReps || s.reps} @ RPE ${s.targetRpe || s.rpe}`;
 
-                    rowsHtml += `
-                        <tr class="border-b border-[#334155]/60 transition ${
-                            s.completed ? 'bg-emerald-950/25' : isDangerRpe ? 'bg-red-950/40' : 'hover:bg-[#0f172a]/50'
+                    const typeBadgeClass =
+                        s.type === 'TOP SET'
+                            ? 'bg-amber-500 text-slate-950'
+                            : s.type === 'BACK-OFF'
+                            ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                            : s.type === 'WARMUP'
+                            ? 'bg-[#0f172a] text-slate-400 border border-[#334155]'
+                            : s.type === 'EVAL'
+                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                            : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+
+                    setRowsHtml += `
+                        <div class="set-row-grid px-3.5 py-2.5 border-b border-[#334155]/60 transition ${
+                            s.completed ? 'bg-emerald-950/25' : isDangerRpe ? 'bg-red-950/40' : 'hover:bg-[#0f172a]/40'
                         }">
-                            <td class="py-3 px-4 font-mono text-xs text-slate-400 font-bold">#${sIdx + 1}</td>
-                            <td class="py-3 px-3">
-                                <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-                                    s.type === 'TOP SET'
-                                        ? 'bg-amber-500 text-slate-950'
-                                        : s.type === 'BACK-OFF'
-                                        ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                                        : s.type === 'WARMUP'
-                                        ? 'bg-[#0f172a] text-slate-400 border border-[#334155]'
-                                        : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                                }">${s.type}</span>
-                            </td>
-                            <td class="py-3 px-3">
+                            <!-- Col 1: Set # & Type Badge -->
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono text-xs font-extrabold text-slate-400 w-5">#${sIdx + 1}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${typeBadgeClass}">
+                                    ${s.type}
+                                </span>
+                            </div>
+
+                            <!-- Col 2: Target Prescription -->
+                            <div class="min-w-0">
+                                <span class="text-[10px] font-mono uppercase text-slate-400 block leading-none mb-0.5">TARGET</span>
+                                <span class="font-mono text-xs text-slate-200 font-semibold truncate block" title="${prescriptionText}">
+                                    ${prescriptionText}
+                                </span>
+                            </div>
+
+                            <!-- Col 3: Weight (lbs) Input -->
+                            <div>
+                                <span class="text-[10px] font-mono uppercase text-slate-400 block leading-none mb-0.5">WEIGHT</span>
                                 <input type="number" step="5" value="${s.weight}"
                                     onchange="handleSetFieldChange('${ex.id}', '${s.id}', 'weight', this.value)"
-                                    class="w-24 px-2.5 py-1.5 font-mono text-sm font-bold">
-                            </td>
-                            <td class="py-3 px-3 font-mono text-xs text-slate-300">
-                                ${
-                                    barWeight
-                                        ? `<button type="button" onclick="openInPlateCalculator(${s.weight}, ${barWeight})" class="text-blue-400 hover:text-blue-300 underline decoration-dotted" title="Inspect in Plate Calculator">${plateString}</button>`
-                                        : `<span class="text-slate-500">—</span>`
-                                }
-                            </td>
-                            <td class="py-3 px-3">
+                                    class="w-full px-2 py-1 font-mono text-sm font-bold text-center">
+                            </div>
+
+                            <!-- Col 4: Reps Input -->
+                            <div>
+                                <span class="text-[10px] font-mono uppercase text-slate-400 block leading-none mb-0.5">REPS</span>
                                 <input type="number" min="1" value="${s.reps}"
                                     onchange="handleSetFieldChange('${ex.id}', '${s.id}', 'reps', this.value)"
-                                    class="w-20 px-2.5 py-1.5 font-mono text-sm font-bold">
-                            </td>
-                            <td class="py-3 px-3">
+                                    class="w-full px-2 py-1 font-mono text-sm font-bold text-center">
+                            </div>
+
+                            <!-- Col 5: RPE Select Dropdown -->
+                            <div>
+                                <span class="text-[10px] font-mono uppercase text-slate-400 block leading-none mb-0.5">ACTUAL RPE</span>
                                 <select onchange="handleSetFieldChange('${ex.id}', '${s.id}', 'rpe', this.value)"
-                                    class="px-2.5 py-1.5 font-mono text-xs sm:text-sm font-bold ${
+                                    class="w-full px-2 py-1 font-mono text-xs font-bold ${
                                         isDangerRpe ? 'text-red-400 border-red-500' : 'text-amber-400'
                                     }">
                                     ${[6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0]
                                         .map(v => `<option value="${v}" ${parseFloat(s.rpe) === v ? 'selected' : ''}>RPE ${v.toFixed(1)}</option>`)
                                         .join('')}
                                 </select>
-                            </td>
-                            <td class="py-3 px-3 font-mono text-xs sm:text-sm font-bold">
-                                ${e1rmVal ? `<span class="text-emerald-400">${e1rmVal} lbs</span>` : '<span class="text-slate-500">—</span>'}
-                            </td>
-                            <td class="py-3 px-4 text-right">
-                                <div class="inline-flex items-center gap-2">
-                                    <button type="button" onclick="toggleSetCompletion('${ex.id}', '${s.id}')"
-                                        class="px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition ${
-                                            s.completed
-                                                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                                                : 'bg-[#0f172a] hover:bg-slate-800 text-slate-300 border border-[#475569]'
-                                        }">
-                                        ${s.completed ? '✓ Done' : 'Log Set'}
-                                    </button>
-                                    <button type="button" onclick="deleteSetFromExercise('${ex.id}', '${s.id}')"
-                                        class="px-2 py-1.5 rounded-lg bg-[#0f172a] hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-[#334155] text-xs"
-                                        title="Remove Set">
-                                        ✕
-                                    </button>
+                            </div>
+
+                            <!-- Col 6: Live RTS e1RM Readout & Plate Math Quick-View Button -->
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] font-mono uppercase text-slate-400">e1RM:</span>
+                                    <span class="font-mono text-xs font-black ${e1rmVal ? 'text-emerald-400' : 'text-slate-500'}">
+                                        ${e1rmVal ? e1rmVal + ' lbs' : 'Warmup'}
+                                    </span>
                                 </div>
-                            </td>
-                        </tr>
+                                ${
+                                    barWeight
+                                        ? `<button type="button" onclick="openInPlateCalculator(${s.weight}, ${barWeight})"
+                                               class="mt-0.5 text-[11px] font-mono text-blue-400 hover:text-blue-300 underline decoration-dotted truncate block"
+                                               title="Open in ${barWeight} lb Bar Plate Calculator">
+                                               📐 ${compactPlateText}
+                                           </button>`
+                                        : `<span class="text-[11px] font-mono text-slate-500 block mt-0.5">${compactPlateText}</span>`
+                                }
+                            </div>
+
+                            <!-- Col 7: Prominent Log Set / Logged ✓ Button + Delete -->
+                            <div class="flex items-center justify-end gap-1.5">
+                                <button type="button" onclick="logSetAndAnalyze('${ex.id}', '${s.id}')"
+                                    class="flex-1 py-2 px-2.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition ${
+                                        s.completed
+                                            ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20'
+                                            : 'bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/25'
+                                    }">
+                                    ${s.completed ? 'Logged ✓' : 'Log Set'}
+                                </button>
+                                <button type="button" onclick="deleteSetFromExercise('${ex.id}', '${s.id}')"
+                                    class="px-2 py-2 rounded-xl bg-[#0f172a] hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-[#334155] text-xs"
+                                    title="Remove Set">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
                     `;
                 });
 
+                // Inline Lumbar Erector Alert inside the Exercise Card if RPE >= 9.5
+                const inlineLumbarCardAlert = hasHighRpeAxialSet ? `
+                    <div class="px-4 py-3 bg-red-950/80 border-b border-red-500/60 flex flex-wrap items-center justify-between gap-2">
+                        <div class="text-xs font-mono text-red-200">
+                            🚨 <strong>LUMBAR GUARDRAIL:</strong> RPE ≥ 9.5 logged on this axial movement. Protect your lower back on remaining sets:
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="executeLumbarGuardrailAudible('strip')" class="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-400 text-slate-950 font-mono text-[11px] font-black uppercase">
+                                ⚡ Strip Remaining -10%
+                            </button>
+                            <button type="button" onclick="executeLumbarGuardrailAudible('skip')" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-mono text-[11px] font-black uppercase">
+                                🛑 Skip Remaining Sets
+                            </button>
+                        </div>
+                    </div>
+                ` : '';
+
                 card.innerHTML = `
-                    <div class="p-4 bg-[#0f172a]/60 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
-                        <div class="space-y-1">
+                    <!-- Card Header -->
+                    <div class="px-4 py-3 bg-[#0f172a]/70 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
+                        <div class="space-y-0.5">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="px-2 py-0.5 rounded bg-blue-600/20 text-blue-400 border border-blue-500/30 font-mono text-xs font-bold">
                                     #${exIdx + 1}
@@ -1659,22 +1653,10 @@
                             </button>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-[#334155] text-[11px] font-mono uppercase text-slate-400 bg-[#0f172a]/90">
-                                    <th class="py-2.5 px-4">Set</th>
-                                    <th class="py-2.5 px-3">Type</th>
-                                    <th class="py-2.5 px-3">Weight (lbs)</th>
-                                    <th class="py-2.5 px-3">Plates / Side</th>
-                                    <th class="py-2.5 px-3">Reps</th>
-                                    <th class="py-2.5 px-3">RPE</th>
-                                    <th class="py-2.5 px-3">RTS Est. 1RM</th>
-                                    <th class="py-2.5 px-4 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rowsHtml}</tbody>
-                        </table>
+                    ${inlineLumbarCardAlert}
+                    <!-- Full-Width Set Rows (No Horizontal Scrollbar) -->
+                    <div class="w-full divide-y divide-[#334155]/40">
+                        ${setRowsHtml}
                     </div>
                 `;
                 container.appendChild(card);
@@ -1700,36 +1682,169 @@
             renderActiveWorkoutLogger();
         }
 
-        function toggleSetCompletion(exId, setId) {
+        // ====================================================================
+        // 7. LIVE AI COACH FEEDBACK EVERY TIME A SET IS LOGGED
+        // ====================================================================
+        function generateInstantSetCoachTelemetry(ex, setObj, setNumber) {
+            const w = parseFloat(setObj.weight) || 0;
+            const r = parseInt(setObj.reps, 10) || 0;
+            const rpe = parseFloat(setObj.rpe) || 8.0;
+            const e1rm = setObj.type === 'WARMUP' ? null : computeE1RM(w, r, rpe);
+            const targetW = setObj.targetWeight || w;
+            const targetR = setObj.targetReps || r;
+            const targetRpe = setObj.targetRpe || 8.0;
+
+            // Find next uncompleted set in this exercise
+            const nextSetIdx = ex.sets.findIndex((s, idx) => idx >= setNumber && !s.completed);
+            const nextSet = nextSetIdx !== -1 ? ex.sets[nextSetIdx] : null;
+
+            // Goal benchmark comparison
+            let goalNote = '';
+            if (ex.liftKey === 'bench' && e1rm) {
+                const pct = Math.round((e1rm / 315) * 100);
+                goalNote = `• **315 Bench Goal Tracker:** **${e1rm} lbs e1RM** (${pct}% of 315 lb target).`;
+            } else if (ex.liftKey === 'squat' && e1rm) {
+                const pct = Math.round((e1rm / 405) * 100);
+                goalNote = `• **405 Squat Goal Tracker (70lb SSB):** **${e1rm} lbs e1RM** (${pct}% of 405 lb target).`;
+            } else if (ex.liftKey === 'deadlift' && e1rm) {
+                const pct = Math.round((e1rm / 495) * 100);
+                goalNote = `• **495 Deadlift Goal Tracker:** **${e1rm} lbs e1RM** (${pct}% of 495 lb target).`;
+            } else if (e1rm) {
+                goalNote = `• **RTS Est. 1RM:** **${e1rm} lbs** (RIR: ${Math.max(0, 10 - rpe).toFixed(1)} reps in reserve).`;
+            } else {
+                goalNote = `• **Warm-Up Acclimation:** Bar speed & groove primed.`;
+            }
+
+            // Next-set loading recommendation
+            let nextLoadAdvice = '';
+            if (ex.isAxial && rpe >= 9.5) {
+                const stripped = nextSet ? Math.round((nextSet.weight * 0.9) / 5) * 5 : Math.round((w * 0.9) / 5) * 5;
+                nextLoadAdvice = `🚨 **LUMBAR ERECTOR GUARDRAIL (RPE ${rpe}):** Spinal stabilizer fatigue is critically high. Click **⚡ Strip Remaining Sets -10%** to drop your next set to **${stripped} lbs** (capped at RPE 7.5) or skip remaining axial volume.`;
+            } else if (setObj.type === 'WARMUP' || setObj.type === 'EVAL') {
+                nextLoadAdvice = nextSet
+                    ? `• **Next Set (#${nextSetIdx + 1} ${nextSet.type}):** Load **${nextSet.weight} lbs × ${nextSet.reps}**. Lock in your 360° belt brace before unracking.`
+                    : `• **Ramp Complete:** Ready for working sets.`;
+            } else if (rpe <= targetRpe - 1.0 && r >= targetR) {
+                nextLoadAdvice = nextSet
+                    ? `• **Next Set Recommendation:** Set moved fast (RPE ${rpe} vs target ${targetRpe}). Hold **${nextSet.weight} lbs** for crisp bar speed, or bump **+5 lbs to ${nextSet.weight + 5} lbs** if lumbar bracing feels 100% locked.`
+                    : `• **Exercise Complete:** High bar speed across the board—log +5 lbs progression for next week.`;
+            } else if (rpe > targetRpe + 0.5 && !ex.isAxial) {
+                consttrimmed = nextSet ? Math.max(5, nextSet.weight - 5) : w;
+                nextLoadAdvice = nextSet
+                    ? `• **Next Set Recommendation:** Effort drifted to RPE ${rpe}. Take the full **${formatTimeMMSS(ex.restSeconds || 120)}** rest and hold **${nextSet.weight} lbs** (or trim to **${trimmed} lbs** to stay out of grinder reps).`
+                    : `• **Exercise Complete:** Solid high-effort stimulus banked. Move to the next movement.`;
+            } else {
+                nextLoadAdvice = nextSet
+                    ? `• **Next Set (#${nextSetIdx + 1} ${nextSet.type}):** Right on prescription. Stay at **${nextSet.weight} lbs × ${nextSet.reps}** after your **${formatTimeMMSS(ex.restSeconds || 120)}** rest timer.`
+                    : `• **All Sets Logged for ${ex.name}!** Recover and transition to your next movement.`;
+            }
+
+            const headerLine = `**${ex.name} — Set #${setNumber} (${setObj.type}): ${w} lbs × ${r} @ RPE ${rpe.toFixed(1)}**`;
+            const cueLine = `• **Biomechanical Cue:** ${ex.cue}`;
+
+            return {
+                badge: ex.isAxial && rpe >= 9.5 ? '🚨 LUMBAR GUARDRAIL ALERT' : `✓ SET #${setNumber} TELEMETRY`,
+                text: `${headerLine}\n${goalNote}\n${nextLoadAdvice}\n${cueLine}`,
+                isGuardrailTrigger: ex.isAxial && rpe >= 9.5
+            };
+        }
+
+        async function logSetAndAnalyze(exId, setId) {
             const active = workoutTemplates[currentDayId];
             if (!active) return;
 
+            let loggedEx = null;
+            let loggedSet = null;
+            let loggedSetNumber = 1;
+
             active.exercises.forEach(ex => {
                 if (ex.id !== exId) return;
-                ex.sets.forEach(s => {
+                ex.sets.forEach((s, idx) => {
                     if (s.id !== setId) return;
-                    s.completed = !s.completed;
-                    if (s.completed && ex.restSeconds) {
-                        startRestTimer(ex.restSeconds);
-                    }
-                    if (s.completed && ex.isAxial && parseFloat(s.rpe) >= 9.5) {
-                        triggerLumbarGuardrailBanner(ex.name, s.weight, s.reps, s.rpe);
-                    }
+                    // Always mark as logged (or re-analyze if clicked again after editing weight/reps/RPE)
+                    s.completed = true;
+                    loggedEx = ex;
+                    loggedSet = s;
+                    loggedSetNumber = idx + 1;
                 });
             });
 
+            if (!loggedEx || !loggedSet) return;
+
+            // 1. Start Rest Timer for this exercise
+            if (loggedEx.restSeconds) {
+                startRestTimer(loggedEx.restSeconds);
+            }
+
+            // 2. Check Lumbar Erector Guardrail (RPE >= 9.5 on Axial Lift)
+            if (loggedEx.isAxial && parseFloat(loggedSet.rpe) >= 9.5) {
+                triggerLumbarGuardrailBanner(loggedEx.name, loggedSet.weight, loggedSet.reps, loggedSet.rpe);
+            }
+
+            // 3. Push Instant Deterministic Sports-Science Set Telemetry to Sticky Sidebar
+            const telemetry = generateInstantSetCoachTelemetry(loggedEx, loggedSet, loggedSetNumber);
+            appendCoachMessage('assistant', telemetry.text, false, telemetry.badge, telemetry.isGuardrailTrigger);
+
             persistState();
             renderActiveWorkoutLogger();
+            showToast(`Logged ${loggedEx.name} Set #${loggedSetNumber} (${loggedSet.weight} × ${loggedSet.reps} @ RPE ${loggedSet.rpe})`);
+
+            // 4. Optional Live Gemini API Enrichment if API Key is configured
+            const savedKey = localStorage.getItem(STORAGE_KEY_API_KEY) || '';
+            if (savedKey) {
+                requestGeminiLiveSetFeedback(savedKey, loggedEx, loggedSet, loggedSetNumber);
+            }
+        }
+
+        async function requestGeminiLiveSetFeedback(apiKey, ex, setObj, setNumber) {
+            const e1rm = computeE1RM(setObj.weight, setObj.reps, setObj.rpe);
+            const prompt = `Athlete (200lb BW, 315/405/495 goals, recovering lumbar erector strain) just logged:
+Exercise: ${ex.name} (${ex.barType})
+Set #${setNumber} (${setObj.type}): ${setObj.weight} lbs x ${setObj.reps} reps @ RPE ${setObj.rpe} (Target was ${setObj.targetDesc || 'prescribed'}).
+Calculated RTS e1RM: ${e1rm} lbs.
+Provide a concise 2-sentence live coaching cue & next-set load confirmation.`;
+
+            const delays = [1000, 2000];
+            for (let attempt = 0; attempt <= delays.length; attempt++) {
+                try {
+                    const res = await fetch(
+                        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ role: 'user', parts: [{ text: prompt }] }]
+                            })
+                        }
+                    );
+                    if (!res.ok) throw new Error('API status');
+                    const data = await res.json();
+                    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (reply) {
+                        appendCoachMessage('assistant', reply.trim(), false, '✨ GEMINI LIVE INSIGHT');
+                    }
+                    return;
+                } catch (err) {
+                    if (attempt < delays.length) {
+                        await new Promise(r => setTimeout(r, delays[attempt]));
+                    }
+                }
+            }
         }
 
         function addSetToExercise(exId) {
             const active = workoutTemplates[currentDayId];
             const ex = active.exercises.find(e => e.id === exId);
             if (!ex) return;
-            const last = ex.sets[ex.sets.length - 1] || { type: 'WORKING', weight: 135, reps: 5, rpe: 8.0 };
+            const last = ex.sets[ex.sets.length - 1] || { type: 'WORK', weight: 135, reps: 5, rpe: 8.0 };
+            const nextType = last.type === 'TOP SET' ? 'BACK-OFF' : last.type;
             ex.sets.push({
                 id: 'set_' + Date.now(),
-                type: last.type === 'TOP SET' ? 'BACK-OFF' : last.type,
+                type: nextType,
+                targetDesc: `${last.weight} lbs × ${last.reps} @ RPE ${last.rpe}`,
+                targetWeight: last.weight,
+                targetReps: last.reps,
+                targetRpe: last.rpe,
                 weight: last.weight,
                 reps: last.reps,
                 rpe: last.rpe,
@@ -1785,11 +1900,17 @@
 
             persistState();
             renderHistoryLogs();
+            appendCoachMessage(
+                'assistant',
+                `🏁 **Session Saved to History:** ${active.title}\n• **Highlight:** ${bestHighlight}\n• Prioritize 40–50g protein and 3×60s passive dead hangs to decompress your lumbar spine.`,
+                false,
+                '✓ WORKOUT BANKED'
+            );
             showToast('Workout Saved to Persistent History!');
         }
 
         // ====================================================================
-        // 7. LUMBAR ERECTOR GUARDRAIL SYSTEM
+        // 8. LUMBAR ERECTOR GUARDRAIL SYSTEM
         // ====================================================================
         function triggerLumbarGuardrailBanner(exName, weight, reps, rpe) {
             const banner = document.getElementById('lumbarGuardrailBanner');
@@ -1803,44 +1924,60 @@
             document.getElementById('lumbarGuardrailBanner').classList.add('hidden');
         }
 
-        function executeLumbarGuardrailAudible() {
+        function executeLumbarGuardrailAudible(mode = 'strip') {
             const active = workoutTemplates[currentDayId];
             if (!active) return;
 
-            // Remove any unsupported hinges (e.g., Barbell RDLs, Pendlay rows)
+            // Always remove unsupported lower-back hinges
             active.exercises = active.exercises.filter(ex => {
                 const n = ex.name.toLowerCase();
                 return !ex.isUnsupportedHinge && !n.includes('rdl') && !n.includes('romanian') && !n.includes('good morning');
             });
 
-            // Strip remaining uncompleted working/back-off sets on axial lifts by 10% (rounded to nearest 5 lbs)
-            active.exercises.forEach(ex => {
-                if (ex.isAxial) {
-                    ex.cue = 'LUMBAR GUARDRAIL ACTIVE: Remaining sets stripped by 10%. Maintain rigid 360° belt brace and cap at RPE 7.5.';
-                    ex.sets.forEach(s => {
-                        if (!s.completed && s.type !== 'WARMUP') {
-                            s.weight = Math.round((s.weight * 0.9) / 5) * 5;
-                            s.rpe = 7.5;
-                        }
-                    });
-                }
-            });
+            if (mode === 'skip') {
+                active.exercises.forEach(ex => {
+                    if (ex.isAxial) {
+                        ex.cue = 'LUMBAR GUARDRAIL: Remaining axial sets skipped to protect spinal erectors.';
+                        ex.sets = ex.sets.filter(s => s.completed);
+                    }
+                });
+                active.notes = 'LUMBAR AUDIBLE EXECUTED: Remaining uncompleted axial sets skipped to prevent erector strain.';
+                appendCoachMessage(
+                    'assistant',
+                    '🛑 **Lumbar Guardrail Executed (Axial Volume Terminated):** I cleared your remaining uncompleted axial sets so you can move directly to supported accessory work and spinal traction hangs.',
+                    true,
+                    '🛑 AXIAL VOLUME SKIPPED'
+                );
+            } else {
+                active.exercises.forEach(ex => {
+                    if (ex.isAxial) {
+                        ex.cue = 'LUMBAR GUARDRAIL ACTIVE: Remaining sets stripped by 10%. Maintain rigid 360° belt brace and cap at RPE 7.5.';
+                        ex.sets.forEach(s => {
+                            if (!s.completed && s.type !== 'WARMUP') {
+                                s.weight = Math.round((s.weight * 0.9) / 5) * 5;
+                                s.rpe = 7.5;
+                                s.targetDesc = `${s.weight} lbs × ${s.reps} @ RPE 7.5 (-10% Guardrail)`;
+                            }
+                        });
+                    }
+                });
+                active.notes = 'LUMBAR AUDIBLE EXECUTED: Remaining axial back-off sets reduced by 10% and unsupported hinges removed.';
+                appendCoachMessage(
+                    'assistant',
+                    '⚡ **Lumbar Erector Guardrail Executed (-10% Back-Offs):** I stripped your remaining uncompleted axial sets by **10%** (rounded to the nearest 5 lbs), capped target RPE at **7.5**, and removed any unsupported lower-back hinges.',
+                    true,
+                    '⚡ -10% GUARDRAIL APPLIED'
+                );
+            }
 
-            active.notes = 'LUMBAR AUDIBLE EXECUTED: Remaining axial back-off sets reduced by 10% and unsupported hinges removed.';
             dismissLumbarGuardrail();
             persistState();
             renderActiveWorkoutLogger();
-
-            appendCoachMessage(
-                'assistant',
-                '⚡ **Lumbar Erector Guardrail Executed:** I stripped your remaining uncompleted axial sets by **10%** (rounded to the nearest 5 lbs), capped target RPE at **7.5**, and removed any unsupported lower-back hinges.',
-                true
-            );
-            showToast('Back-Off Sets Reduced by 10% (Lumbar Guardrail)');
+            showToast('Lumbar Guardrail Audible Applied to Active Workout');
         }
 
         // ====================================================================
-        // 8. CUSTOM EXERCISE MODAL
+        // 9. CUSTOM EXERCISE MODAL
         // ====================================================================
         function openAddExerciseModal() {
             document.getElementById('addExerciseModal').classList.remove('hidden');
@@ -1867,7 +2004,11 @@
             for (let i = 0; i < numSets; i++) {
                 sets.push({
                     id: `custom_s_${Date.now()}_${i}`,
-                    type: 'WORKING',
+                    type: 'WORK',
+                    targetDesc: `${weight} lbs × ${reps} @ RPE 8.0`,
+                    targetWeight: weight,
+                    targetReps: reps,
+                    targetRpe: 8.0,
                     weight,
                     reps,
                     rpe: 8.0,
@@ -1894,7 +2035,7 @@
         }
 
         // ====================================================================
-        // 9. VISUAL PLATE CALCULATOR (45 LB VS 70 LB ROGUE SSB)
+        // 10. VISUAL PLATE CALCULATOR (45 LB VS 70 LB ROGUE SSB)
         // ====================================================================
         function selectCalculatorBar(barW) {
             calcSelectedBarWeight = barW;
@@ -1975,7 +2116,7 @@
         }
 
         // ====================================================================
-        // 10. REST TIMER & 35-MINUTE NORWEGIAN 4×4 INTERVAL TIMER
+        // 11. REST TIMER & 35-MINUTE NORWEGIAN 4×4 INTERVAL TIMER
         // ====================================================================
         let restTimerInterval = null;
         let restSecondsRemaining = 0;
@@ -2126,35 +2267,42 @@
             const cadence = document.getElementById('cardioLogCadence').value;
             const notes = document.getElementById('cardioLogNotes').value;
 
+            const highlight = `${duration} | ${distance} | Avg ${avgHr} BPM (Peak ${peakHr} BPM) | ${cadence}`;
             historyLogs.unshift({
                 id: 'cardio_' + Date.now(),
                 date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 type: 'cardio',
                 title: modality,
-                highlight: `${duration} | ${distance} | Avg ${avgHr} BPM (Peak ${peakHr} BPM) | ${cadence}`,
+                highlight,
                 summary: notes
             });
 
             persistState();
             renderHistoryLogs();
-            showToast('Cardio Session Saved to History!');
+            appendCoachMessage(
+                'assistant',
+                `**${modality} Logged:**\n• **Telemetry:** ${highlight}\n• **VO2 Assessment:** Peak HR of **${peakHr} BPM** sits squarely in your 160–175 BPM target zone. Keep an 8-hour recovery buffer before heavy lower-body work.`,
+                false,
+                '⏱️ 4×4 CARDIO TELEMETRY'
+            );
+            showToast('Cardio Session Logged & Analyzed!');
         }
 
         // ====================================================================
-        // 11. WEEKLY SCHEDULE & HISTORY RENDERERS + JSON EXPORT/IMPORT
+        // 12. WEEKLY SCHEDULE & HISTORY RENDERERS + JSON EXPORT/IMPORT
         // ====================================================================
         function renderWeeklySchedule() {
             const container = document.getElementById('weeklyScheduleContainer');
             container.innerHTML = '';
             MASTER_WEEKLY_SCHEDULE.forEach(item => {
                 const row = document.createElement('div');
-                row.className = 'bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-md';
+                row.className = 'bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shadow-md';
                 row.innerHTML = `
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3.5">
                         <div class="w-28 shrink-0">
                             <span class="text-sm font-black font-mono uppercase tracking-wider text-amber-400">${item.day}</span>
                         </div>
-                        <div class="space-y-1.5">
+                        <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-blue-500/15 text-blue-300 border border-blue-500/30">AM 4×4 / MOBILITY</span>
                                 <span class="text-sm font-bold text-white">${item.am}</span>
@@ -2170,7 +2318,7 @@
                     <div class="shrink-0">
                         ${
                             item.pmDayId
-                                ? `<button type="button" onclick="selectWorkoutDay('${item.pmDayId}')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-wider transition">Load Session →</button>`
+                                ? `<button type="button" onclick="selectWorkoutDay('${item.pmDayId}')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-wider transition">Load Session →</button>`
                                 : `<span class="px-3 py-1.5 rounded-xl bg-[#0f172a] text-slate-400 border border-[#334155] font-mono text-xs">Full Recovery Day</span>`
                         }
                     </div>
@@ -2217,7 +2365,8 @@
                 exportedAt: new Date().toISOString(),
                 workoutTemplates,
                 currentDayId,
-                historyLogs
+                historyLogs,
+                coachMessages
             };
             const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -2239,10 +2388,12 @@
                     if (data.workoutTemplates) workoutTemplates = data.workoutTemplates;
                     if (data.currentDayId) currentDayId = data.currentDayId;
                     if (data.historyLogs) historyLogs = data.historyLogs;
+                    if (data.coachMessages) coachMessages = data.coachMessages;
                     persistState();
                     renderDaySwitchers();
                     renderActiveWorkoutLogger();
                     renderHistoryLogs();
+                    renderCoachChatStream();
                     showToast('Training Backup Restored Successfully!');
                 } catch (err) {
                     showToast('Invalid JSON Backup File');
@@ -2252,16 +2403,8 @@
         }
 
         // ====================================================================
-        // 12. GEMINI AI COACH SIDEBAR (LOCAL PARSER + LIVE API KEY SUPPORT)
+        // 13. STICKY GEMINI AI COACH SIDEBAR & WORKOUT MUTATOR
         // ====================================================================
-        function toggleMobileCoachDrawer() {
-            const drawer = document.getElementById('coachSidebarDrawer');
-            drawer.classList.toggle('hidden');
-            drawer.classList.toggle('fixed');
-            drawer.classList.toggle('inset-0');
-            drawer.classList.toggle('z-50');
-        }
-
         function openApiKeyModal() {
             const saved = localStorage.getItem(STORAGE_KEY_API_KEY) || '';
             document.getElementById('geminiApiKeyInput').value = saved;
@@ -2294,10 +2437,18 @@
 
         function updateApiKeyBadge() {
             const hasKey = Boolean(localStorage.getItem(STORAGE_KEY_API_KEY));
-            document.getElementById('apiKeyStatusText').innerText = hasKey ? 'API Key Active' : 'Gemini API Key';
+            document.getElementById('apiKeyStatusText').innerText = hasKey ? 'Gemini Key Active' : 'Gemini Key';
             document.getElementById('coachModeSubtitle').innerText = hasKey
-                ? 'Gemini 3 Flash Live API Connected'
-                : 'Built-In Smart Workout Mutator Active';
+                ? 'Gemini 3 Flash + Live Set Telemetry Active'
+                : 'Instant Sports-Science Set Telemetry Active';
+        }
+
+        function formatMarkdownText(raw) {
+            return String(raw || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>');
         }
 
         function renderCoachChatStream() {
@@ -2306,18 +2457,39 @@
             coachMessages.forEach(m => {
                 const wrapper = document.createElement('div');
                 wrapper.className = `flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`;
+
+                const badgeHtml = m.badge
+                    ? `<div class="mb-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                          m.isGuardrail
+                              ? 'bg-red-500 text-slate-950'
+                              : m.mutated
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                      }">${m.badge}</div>`
+                    : '';
+
+                const guardrailButtonsHtml = m.isGuardrail
+                    ? `<div class="mt-2.5 pt-2 border-t border-red-500/40 flex flex-wrap gap-1.5">
+                           <button type="button" onclick="executeLumbarGuardrailAudible('strip')" class="px-2.5 py-1 rounded-lg bg-red-500 hover:bg-red-400 text-slate-950 font-mono text-[10px] font-black uppercase">
+                               ⚡ Strip Remaining -10%
+                           </button>
+                           <button type="button" onclick="executeLumbarGuardrailAudible('skip')" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-mono text-[10px] font-black uppercase">
+                               🛑 Skip Remaining Sets
+                           </button>
+                       </div>`
+                    : '';
+
                 wrapper.innerHTML = `
-                    <div class="max-w-[92%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed ${
+                    <div class="w-full rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
                         m.role === 'user'
-                            ? 'bg-blue-600 text-white font-semibold'
+                            ? 'bg-blue-600 text-white font-semibold max-w-[90%]'
+                            : m.isGuardrail
+                            ? 'bg-red-950/80 border-2 border-red-500 text-red-100'
                             : 'bg-[#0f172a] border border-[#334155] text-slate-200'
                     }">
-                        ${
-                            m.mutated
-                                ? '<div class="mb-1.5 inline-block px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono font-bold uppercase">✓ Active Workout Updated</div>'
-                                : ''
-                        }
-                        <div class="whitespace-pre-line">${m.text}</div>
+                        ${badgeHtml}
+                        <div class="whitespace-pre-line">${formatMarkdownText(m.text)}</div>
+                        ${guardrailButtonsHtml}
                     </div>
                 `;
                 stream.appendChild(wrapper);
@@ -2325,8 +2497,21 @@
             stream.scrollTop = stream.scrollHeight;
         }
 
-        function appendCoachMessage(role, text, mutated = false) {
-            coachMessages.push({ role, text, mutated });
+        function appendCoachMessage(role, text, mutated = false, badge = null, isGuardrail = false) {
+            coachMessages.push({
+                role,
+                text,
+                mutated,
+                badge: badge || (mutated ? '✓ ACTIVE WORKOUT UPDATED' : null),
+                isGuardrail
+            });
+            persistState();
+            renderCoachChatStream();
+        }
+
+        function clearCoachChat() {
+            coachMessages = JSON.parse(JSON.stringify(INITIAL_COACH_WELCOME));
+            persistState();
             renderCoachChatStream();
         }
 
@@ -2348,7 +2533,7 @@
             const active = workoutTemplates[currentDayId];
 
             if (lower.includes('rpe 9.5') || lower.includes('rpe 10') || lower.includes('strip') || lower.includes('audible')) {
-                executeLumbarGuardrailAudible();
+                executeLumbarGuardrailAudible('strip');
                 return true;
             }
 
@@ -2386,7 +2571,7 @@
                 const ex = active.exercises[0];
                 if (ex) {
                     ex.sets.forEach(s => {
-                        if (s.type === 'TOP SET' || s.type === 'WORKING') {
+                        if (s.type === 'TOP SET' || s.type === 'WORK') {
                             s.weight += 5;
                         }
                     });
@@ -2413,14 +2598,13 @@
                 if (!handled) {
                     appendCoachMessage(
                         'assistant',
-                        `Locked in on **${workoutTemplates[currentDayId].title}**. Keep your primary top set at RPE 7.5–8 and maintain a 360° belt brace.\n\n*(Tip: Use any 1-Click Audible chip above to mutate sets immediately, or click **🔑 Gemini API Key** in the top bar to connect live Gemini Flash on GitHub Pages.)*`,
+                        `Locked in on **${workoutTemplates[currentDayId].title}**. Click **Log Set** on any row as you move down the page for live set-by-set telemetry, or use the 1-Click Audible chips above to mutate sets immediately.`,
                         false
                     );
                 }
                 return;
             }
 
-            // Live Gemini API call when user has configured their key or in Canvas environment
             const sendBtn = document.getElementById('coachSendBtn');
             sendBtn.disabled = true;
             sendBtn.innerText = '...';
